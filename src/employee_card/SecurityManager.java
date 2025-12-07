@@ -6,19 +6,28 @@ import javacardx.crypto.*;
 
 public class SecurityManager {
 
-    // Config PIN & AES
-    private static final byte[] DEFAULT_PIN = { '1', '2', '3', '4' };
+    // Config
     private static final byte MAX_RETRY = 3;
-    private static final byte PIN_LEN = 8;
-    
-    private static final byte[] DEFAULT_AES_KEY = { 
-        (byte)0x40, (byte)0x41, (byte)0x42, (byte)0x43, (byte)0x44, (byte)0x45, (byte)0x46, (byte)0x47,
-        (byte)0x48, (byte)0x49, (byte)0x4A, (byte)0x4B, (byte)0x4C, (byte)0x4D, (byte)0x4E, (byte)0x4F 
-    };
+    private static final byte AES_BLOCK_LEN = 16;
+    private static final byte HASH_LEN = 32; // SHA-256
 
-    private OwnerPIN pin;
-    private AESKey aesKey;
-    private Cipher aesCipher;
+    private boolean isValidated;
+    private byte pinTries;
+    private boolean isPinSet;
+
+    // Crypto
+    private AESKey transientMasterKey; // Key nam tren RAM
+    private AESKey wrapKey;            // Key dan xuat
+    private Cipher aesCipher;          // Dung cho data encryption
+    private Cipher keyWrapper;         // Dung cho key wrapping
+    private MessageDigest sha256;      
+
+    // Du lieu luu trong EEPROM
+    private byte[] salt;               
+    private byte[] encryptedMasterKey; // Khoa chu da ma hoa (Blob)
+    private byte[] masterKeyHash;     
+    
+    private byte[] tempBuffer;
     
     // RSA Objects
     private KeyPair rsaKeyPair;
@@ -26,70 +35,175 @@ public class SecurityManager {
     private RSAPublicKey publicKey;
     private Signature rsaSignature;
 
-    private byte[] tempBuffer;
-
     public SecurityManager() {
-        // 1. PIN
-        pin = new OwnerPIN(MAX_RETRY, PIN_LEN);
-        pin.update(DEFAULT_PIN, (short) 0, (byte) DEFAULT_PIN.length);
+    	isPinSet = false;
+        isValidated = false;
+        pinTries = MAX_RETRY;
+        
+        salt = new byte[16];
+        encryptedMasterKey = new byte[AES_BLOCK_LEN];
+        masterKeyHash = new byte[HASH_LEN];
 
+        // Khoi tao
         try {
-            // 2. AES (128 bit)
-            aesKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
-            aesKey.setKey(DEFAULT_AES_KEY, (short) 0);
-            aesCipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
+            // AES Key object
+            transientMasterKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+            wrapKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
             
-            // 3. RSA (1024 bit)
-			rsaKeyPair = new KeyPair(KeyPair.ALG_RSA, KeyBuilder.LENGTH_RSA_1024);
+            // Ciphers
+            aesCipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
+            keyWrapper = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
+            
+            // Hash
+            sha256 = MessageDigest.getInstance(MessageDigest.ALG_SHA, false);
+            
+            // RSA 
+            rsaKeyPair = new KeyPair(KeyPair.ALG_RSA, KeyBuilder.LENGTH_RSA_1024);
             rsaKeyPair.genKeyPair();
             privateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
             publicKey = (RSAPublicKey) rsaKeyPair.getPublic();
-            
             rsaSignature = Signature.getInstance(Signature.ALG_RSA_SHA_PKCS1, false);
-            
-            tempBuffer = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
+
+            tempBuffer = JCSystem.makeTransientByteArray((short) 64, JCSystem.CLEAR_ON_DESELECT);
+
+            // SETUP
+            initSecureData();
+
         } catch (CryptoException e) {
             ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
         }
     }
 
-    // --- PIN ---
-    public boolean verify(byte[] buf, short off, byte len) { return pin.check(buf, off, len); }
-    public void changePin(byte[] buf, short off, byte len) { pin.update(buf, off, len); pin.check(buf, off, len); }
-    public byte getTriesRemaining() { return pin.getTriesRemaining(); }
-    public boolean isValidated() { return pin.isValidated(); }
-    public void reset() { pin.reset(); }
-
-    public boolean verifyEncryptedPin(byte[] buf, short off, short len) {
-        if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        aesCipher.init(aesKey, Cipher.MODE_DECRYPT);
-        aesCipher.doFinal(buf, off, len, tempBuffer, (short) 0);
-        
-        byte pinLen = 0;
-        for (short i = 0; i < 16; i++) { if (tempBuffer[i] == (byte) 0xFF) break; pinLen++; }
-        return pin.check(tempBuffer, (short) 0, pinLen);
-    }
-
-    // --- DATA ENCRYPTION (AES) ---
+    /// --- SETUP ---
     
-    public void decryptData(byte[] src, short srcOff, short len, byte[] dest, short destOff) {
-        if (len % 16 != 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        aesCipher.init(aesKey, Cipher.MODE_DECRYPT);
-        short i = 0;
-        while (i < len) {
-            aesCipher.doFinal(src, (short)(srcOff + i), (short)16, dest, (short)(destOff + i));
-            i += 16;
+    private void initSecureData() {
+        RandomData rng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+        // Sinh salt
+        rng.generateData(salt, (short) 0, (short) 16);
+        
+        isPinSet = false;
+        isValidated = false;
+    }
+
+    public void getSalt(byte[] dest, short off) {
+        Util.arrayCopyNonAtomic(salt, (short) 0, dest, off, (short) 16);
+    }
+    
+    public boolean isPinSet() {
+        return isPinSet;
+    }
+    public byte getTriesRemaining() { return pinTries; }
+    public boolean isValidated() { return isValidated; }
+
+    public void reset() {
+        isValidated = false;
+        transientMasterKey.clearKey();
+    }
+    
+    public void setupFirstPin(byte[] keyBuffer, short off) {
+        if (isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
+
+        // Sinh  Master Key 16 bytes
+        RandomData rng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+        rng.generateData(tempBuffer, (short) 0, (short) 16); 
+
+        // Tinh Hash Master Key => EEPROM (verify pin)
+        sha256.doFinal(tempBuffer, (short) 0, (short) 16, masterKeyHash, (short) 0);
+
+        // Load Master Key vao RAM => sd ma hoa
+        transientMasterKey.setKey(tempBuffer, (short) 0);
+        
+        // Set Key Argon2 
+        wrapKey.setKey(keyBuffer, off);
+
+        // Ma hoa Master Key (tempBuffer) -> Luu vo Blob EEPROM
+        keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
+        keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, encryptedMasterKey, (short) 0);
+
+        // Xoa temp 
+        Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)16, (byte)0);
+
+        isPinSet = true;
+        isValidated = true;
+    }
+
+    // --- (VERIFY) ---
+    // inputKey: key tu PIN (16 bytes)
+    public boolean verifyPin(byte[] inputKey, short off) {
+    	if (!isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
+        if (pinTries == 0) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED); // check
+
+        // 1. Set Key dan xuat
+        wrapKey.setKey(inputKey, off);
+
+        // 2. Giai ma Encrypted Blob trong EEPROM -> Ra Key tam
+        keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
+        // tempBuffer[0..15] chua ket qua giai ma (Candidate Master Key)
+        keyWrapper.doFinal(encryptedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0);
+
+        // 3. Hash Candidate Key
+        // tempBuffer[16..47] chua Hash masterKey
+        sha256.doFinal(tempBuffer, (short) 0, (short) 16, tempBuffer, (short) 16);
+
+        // 4. So sanh voi Hash goc (masterKeyHash)
+        boolean match = (Util.arrayCompare(tempBuffer, (short) 16, masterKeyHash, (short) 0, HASH_LEN) == 0);
+
+        // Clear tempBuffer
+        Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)64, (byte)0);
+
+        if (match) {
+            pinTries = MAX_RETRY; // Reset retry
+            isValidated = true;
+            
+            // Load lai Master Key vao RAM => ma hoa
+            keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
+            keyWrapper.doFinal(encryptedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0);
+            transientMasterKey.setKey(tempBuffer, (short)0);
+            Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)16, (byte)0);
+            return true;
+        } else {
+            // SAI PIN
+            pinTries--;
+            isValidated = false;
+            transientMasterKey.clearKey();
+            if (pinTries == 0) {}
+            return false;
         }
     }
 
+    public void changePin(byte[] newKey, short off) {
+        if (!isValidated || !transientMasterKey.isInitialized()) 
+            ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
+
+        // 1. Lay Master Key tu RAM ra temp
+        transientMasterKey.getKey(tempBuffer, (short) 0);
+
+        // 2. Set new Key Argon2
+        wrapKey.setKey(newKey, off);
+
+        // 3. Ma hoa Master Key = new key -> Ghi e vao Blob
+        keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
+        keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, encryptedMasterKey, (short) 0);
+
+        // Xoa temp
+        Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)16, (byte)0);
+    }
+
+    // --- DATA ENCRYPTION / DECRYPTION  ---
     public void encryptData(byte[] src, short srcOff, short len, byte[] dest, short destOff) {
+        if (!transientMasterKey.isInitialized()) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
         if (len % 16 != 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        aesCipher.init(aesKey, Cipher.MODE_ENCRYPT);
-        short i = 0;
-        while (i < len) {
-            aesCipher.doFinal(src, (short)(srcOff + i), (short)16, dest, (short)(destOff + i));
-            i += 16;
-        }
+        
+        aesCipher.init(transientMasterKey, Cipher.MODE_ENCRYPT);
+        aesCipher.doFinal(src, srcOff, len, dest, destOff);
+    }
+
+    public void decryptData(byte[] src, short srcOff, short len, byte[] dest, short destOff) {
+        if (!transientMasterKey.isInitialized()) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
+        if (len % 16 != 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
+
+        aesCipher.init(transientMasterKey, Cipher.MODE_DECRYPT);
+        aesCipher.doFinal(src, srcOff, len, dest, destOff);
     }
 
     // --- RSA AUTHENTICATION ---

@@ -3,13 +3,18 @@ package employee_card;
 import javacard.framework.*;
 
 public class EmployeeApplet extends Applet {
-
-    // INS Codes
-    private static final byte INS_CHANGE_PIN     = (byte) 0x21;
+	
+	// INS Codes
+	private static final byte INS_CHANGE_PIN     = (byte) 0x21;
+	private static final byte INS_GET_RETRY      = (byte) 0x22;
     private static final byte INS_VERIFY_PIN_ENC = (byte) 0x25; 
     private static final byte INS_AUTHENTICATE   = (byte) 0x26; 
+    private static final byte INS_VERIFY_PIN     = (byte) 0x25;
     private static final byte INS_GET_PUB_KEY    = (byte) 0x27;
-    private static final byte INS_GET_RETRY      = (byte) 0x22;
+    private static final byte INS_GET_SALT       = (byte) 0x28;
+
+    private static final byte INS_SETUP_PIN      = (byte) 0x29;
+    private static final byte INS_CHECK_SETUP    = (byte) 0x2A;
 
     private static final byte INS_READ_INFO      = (byte) 0x30;
     private static final byte INS_UPDATE_INFO    = (byte) 0x31;
@@ -22,13 +27,14 @@ public class EmployeeApplet extends Applet {
     private static final byte INS_ADD_POINT      = (byte) 0x53;
     private static final byte INS_GET_POINT      = (byte) 0x54;
     
-    // INS Avatar (M hóa)
+    // INS Avatar (Ma hoa)
     private static final byte INS_UPDATE_AVATAR   = (byte) 0x10;
     private static final byte INS_DOWNLOAD_AVATAR = (byte) 0x11;
 
     // Size 8KB
     private static final short AVATAR_MAX_SIZE = (short) 8192;
     private static final short SW_EMP_ID_LOCKED  = (short) 0x6985;
+    private static final short SW_AUTH_FAILED = (short) 0x6300;
 
     private CardRepository repository;
     private SecurityManager security;
@@ -58,31 +64,45 @@ public class EmployeeApplet extends Applet {
     }
 
     public void process(APDU apdu) {
-        if (selectingApplet()) return;
+        if (selectingApplet()) {
+            security.reset();
+            return;
+        }
 
         byte[] buf = apdu.getBuffer();
         byte ins = buf[ISO7816.OFFSET_INS];
 
         switch (ins) {
-            //  AVATAR CÓ M HÓA
+        	case INS_CHECK_SETUP:
+                // Tr v 0x01 nu  set, 0x00 nu cha set
+                buf[0] = security.isPinSet() ? (byte) 1 : (byte) 0;
+                apdu.setOutgoingAndSend((short) 0, (short) 1);
+                return;
+            case INS_SETUP_PIN:
+                handleSetupPin(apdu);
+                return;
+        	case INS_GET_SALT:
+                security.getSalt(buf, (short) 0);
+                apdu.setOutgoingAndSend((short) 0, (short) 16);
+                return;
+            case INS_VERIFY_PIN: 
+                handleVerifyPin(apdu); 
+                return;
+            case INS_CHANGE_PIN:     
+                handleChangePin(apdu); 
+                return;
+            case INS_GET_RETRY:
+                buf[0] = security.getTriesRemaining();
+                apdu.setOutgoingAndSend((short) 0, (short) 1);
+                return;
             case INS_UPDATE_AVATAR:
                 handleUpdateAvatarEncrypted(apdu);
                 return;
             case INS_DOWNLOAD_AVATAR:
                 handleGetAvatarEncrypted(apdu);
                 return;
-
-            // ... Các chc nãng khác gi nguyên ...
-            case INS_VERIFY_PIN_ENC: handleVerifyPinEncrypted(apdu); return;
-            case INS_CHANGE_PIN:     handleChangePin(apdu); return;
-            case INS_GET_RETRY:
-                buf[0] = security.getTriesRemaining();
-                apdu.setOutgoingAndSend((short) 0, (short) 1);
-                return;
-            
             case INS_GET_PUB_KEY:  handleGetPublicKey(apdu); return;
             case INS_AUTHENTICATE: handleAuthenticateRSA(apdu); return;
-
             case INS_READ_INFO:
                 if (!repository.isIdSet()) {
                     Util.arrayFillNonAtomic(buf, (short)0, CardRepository.EMP_INFO_MAX, (byte)0);
@@ -120,13 +140,44 @@ public class EmployeeApplet extends Applet {
             default: ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
         }
     }
+    private void handleSetupPin(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+        
+        // Host gi 16 bytes Argon2 Hash xung
+        if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        
+        security.setupFirstPin(buf, ISO7816.OFFSET_CDATA);
+    }
+    
+    private void handleVerifyPin(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+        
+        // Host gui Argon2 (16 bytes)
+        if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        
+        if (!security.verifyPin(buf, ISO7816.OFFSET_CDATA)) {
+            ISOException.throwIt(SW_AUTH_FAILED); // 0x6300
+        }
+    }
 
-    // ---  HÀM UPLOAD (ENCRYPTED) ---
+    private void handleChangePin(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+        
+        // Host gui Argon2 (16 bytes)
+        if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        
+        security.changePin(buf, ISO7816.OFFSET_CDATA);
+    }
+
+    // ---UPLOAD (ENCRYPTED) ---
     private void handleUpdateAvatarEncrypted(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short length = apdu.setIncomingAndReceive();
         
-        // Bt buc chia ht cho 16 ð m hóa
+        // Bt buc chia ht cho 16  m ha
         if (length % 16 != 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
 
         short chunkOffset = Util.makeShort(
@@ -134,16 +185,16 @@ public class EmployeeApplet extends Applet {
             (byte) (buf[ISO7816.OFFSET_P2] & 0xFF)
         );
         
-        // 1. M hóa d liu ngay trong buffer (Plain -> Cipher)
+        // 1. M ha d liu ngay trong buffer (Plain -> Cipher)
         security.encryptData(buf, ISO7816.OFFSET_CDATA, length, buf, ISO7816.OFFSET_CDATA);
         
-        // 2. Lýu Ciphertext vào EEPROM
+        // 2. Lu Ciphertext vo EEPROM
         avatarObj.setData(buf, ISO7816.OFFSET_CDATA, chunkOffset, length);
     }
 
-    // ---  HÀM DOWNLOAD (ENCRYPTED) ---
+    // --- DOWNLOAD (ENCRYPTED) ---
     private void handleGetAvatarEncrypted(APDU apdu) {
-        byte[] data = avatarObj.getData(); // D liu này ðang b m hóa
+        byte[] data = avatarObj.getData(); // D liu ny ang b m ha
         short totalSize = avatarObj.getSize();
         
         short offset = Util.makeShort(
@@ -156,34 +207,22 @@ public class EmployeeApplet extends Applet {
         if (totalSize == 0 || offset >= totalSize) ISOException.throwIt(ISO7816.SW_RECORD_NOT_FOUND);
         if ((short)(offset + lenToRead) > totalSize) lenToRead = (short)(totalSize - offset);
         
-        // Ðm bo block 16 bytes khi gii m
-        // (Client nên gi Le = 240, nhýng nu l byte cui th phi x l cn thn hoc chp nhn li padding)
-        //  ðây gi ðnh Client luôn xin bi s ca 16
+        // m bo block 16 bytes khi gii m
+        // (Client nn gi Le = 240, nhng nu l byte cui th phi x l cn thn hoc chp nhn li padding)
+        //  y gi nh Client lun xin bi s ca 16
         
         apdu.setOutgoingLength(lenToRead);
         
         // 1. Copy Ciphertext ra Buffer gi
         Util.arrayCopyNonAtomic(data, offset, apdu.getBuffer(), (short) 0, lenToRead);
         
-        // 2. Gii m ti ch (Cipher -> Plain) ð gi v Client
+        // 2. Gii m ti ch (Cipher -> Plain)  gi v Client
         security.decryptData(apdu.getBuffer(), (short) 0, lenToRead, apdu.getBuffer(), (short) 0);
         
         // 3. Gi Plaintext
         apdu.sendBytes((short) 0, lenToRead);
     }
 
-    // --- CÁC HÀM KHÁC GI NGUYÊN (Copy t file c ca bn) ---
-    private void handleVerifyPinEncrypted(APDU apdu) {
-        byte[] buf = apdu.getBuffer();
-        short len = apdu.setIncomingAndReceive();
-        if (!security.verifyEncryptedPin(buf, ISO7816.OFFSET_CDATA, len)) ISOException.throwIt((short) 0x6300);
-    }
-    // ... Bn copy nt các hàm x l PIN, Info, Wallet vào ðây nhé ...
-    private void handleChangePin(APDU apdu) {
-        if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive();
-        security.changePin(buf, ISO7816.OFFSET_CDATA, (byte) len);
-    }
     private void handleGetPublicKey(APDU apdu) {
         byte[] buf = apdu.getBuffer(); short len = security.getPublicKey(buf, (short) 0); apdu.setOutgoingAndSend((short) 0, len);
     }
@@ -204,7 +243,7 @@ public class EmployeeApplet extends Applet {
         security.encryptData(buf, ISO7816.OFFSET_CDATA, len, buf, ISO7816.OFFSET_CDATA);
         repository.setEmpInfo(buf, ISO7816.OFFSET_CDATA, len);
     }
-    // ... (Các hàm Wallet, Log copy týõng t) ...
+
     private void handleGetBalance(APDU apdu) {
         byte[] buf = apdu.getBuffer(); byte[] encryptedBal = repository.getBalanceBuffer();
         if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) { Util.arrayFillNonAtomic(buf, (short)0, (short)4, (byte)0); apdu.setOutgoingAndSend((short) 0, (short) 4); return; }

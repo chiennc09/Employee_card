@@ -22,7 +22,7 @@ public class CardRepository {
     private byte[] logs;
     private byte logIndex;
     
-    // (Ð XÓA BIN AVATAR Ð CHUYN SANG CLASS Avatar.java)
+    // ( XA BIN AVATAR  CHUYN SANG CLASS Avatar.java)
 
     public CardRepository() {
         empInfo = new byte[EMP_INFO_MAX];
