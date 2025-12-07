@@ -1,0 +1,241 @@
+package employee_card;
+
+import javacard.framework.*;
+
+public class EmployeeApplet extends Applet {
+
+    // INS Codes
+    private static final byte INS_CHANGE_PIN     = (byte) 0x21;
+    private static final byte INS_VERIFY_PIN_ENC = (byte) 0x25; 
+    private static final byte INS_AUTHENTICATE   = (byte) 0x26; 
+    private static final byte INS_GET_PUB_KEY    = (byte) 0x27;
+    private static final byte INS_GET_RETRY      = (byte) 0x22;
+
+    private static final byte INS_READ_INFO      = (byte) 0x30;
+    private static final byte INS_UPDATE_INFO    = (byte) 0x31;
+    private static final byte INS_ADD_ACCESS_LOG = (byte) 0x40;
+    private static final byte INS_READ_LOGS      = (byte) 0x41;
+    
+    private static final byte INS_WALLET_TOPUP   = (byte) 0x50;
+    private static final byte INS_WALLET_PAY     = (byte) 0x51;
+    private static final byte INS_GET_BALANCE    = (byte) 0x52;
+    private static final byte INS_ADD_POINT      = (byte) 0x53;
+    private static final byte INS_GET_POINT      = (byte) 0x54;
+    
+    // INS Avatar (M hóa)
+    private static final byte INS_UPDATE_AVATAR   = (byte) 0x10;
+    private static final byte INS_DOWNLOAD_AVATAR = (byte) 0x11;
+
+    // Size 8KB
+    private static final short AVATAR_MAX_SIZE = (short) 8192;
+    private static final short SW_EMP_ID_LOCKED  = (short) 0x6985;
+
+    private CardRepository repository;
+    private SecurityManager security;
+    private Avatar avatarObj;
+    
+    private byte[] tempCompBuffer;
+    private byte[] tempBalance;
+
+    protected EmployeeApplet() {
+        repository = new CardRepository();
+        security = new SecurityManager();
+        
+        try {
+            avatarObj = new Avatar(AVATAR_MAX_SIZE);
+        } catch (SystemException e) {
+            ISOException.throwIt(ISO7816.SW_FILE_FULL);
+        }
+        
+        tempCompBuffer = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
+        tempBalance    = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
+        
+        register();
+    }
+
+    public static void install(byte[] bArray, short bOffset, byte bLength) {
+        new EmployeeApplet();
+    }
+
+    public void process(APDU apdu) {
+        if (selectingApplet()) return;
+
+        byte[] buf = apdu.getBuffer();
+        byte ins = buf[ISO7816.OFFSET_INS];
+
+        switch (ins) {
+            //  AVATAR CÓ M HÓA
+            case INS_UPDATE_AVATAR:
+                handleUpdateAvatarEncrypted(apdu);
+                return;
+            case INS_DOWNLOAD_AVATAR:
+                handleGetAvatarEncrypted(apdu);
+                return;
+
+            // ... Các chc nãng khác gi nguyên ...
+            case INS_VERIFY_PIN_ENC: handleVerifyPinEncrypted(apdu); return;
+            case INS_CHANGE_PIN:     handleChangePin(apdu); return;
+            case INS_GET_RETRY:
+                buf[0] = security.getTriesRemaining();
+                apdu.setOutgoingAndSend((short) 0, (short) 1);
+                return;
+            
+            case INS_GET_PUB_KEY:  handleGetPublicKey(apdu); return;
+            case INS_AUTHENTICATE: handleAuthenticateRSA(apdu); return;
+
+            case INS_READ_INFO:
+                if (!repository.isIdSet()) {
+                    Util.arrayFillNonAtomic(buf, (short)0, CardRepository.EMP_INFO_MAX, (byte)0);
+                    apdu.setOutgoingAndSend((short) 0, CardRepository.EMP_INFO_MAX);
+                    return;
+                }
+                byte[] encryptedInfo = repository.getEmpInfoBuffer();
+                security.decryptData(encryptedInfo, (short)0, CardRepository.EMP_INFO_MAX, buf, (short)0);
+                apdu.setOutgoingAndSend((short) 0, CardRepository.EMP_INFO_MAX);
+                return;
+
+            case INS_UPDATE_INFO:
+                if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+                handleUpdateInfo(apdu);
+                return;
+
+            case INS_ADD_ACCESS_LOG: handleAddLog(apdu); return;
+            case INS_READ_LOGS:
+                if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+                handleReadLogs(apdu);
+                return;
+
+            case INS_WALLET_TOPUP: handleTopUp(apdu); return;
+            case INS_WALLET_PAY: 
+                if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+                handlePay(apdu); return;
+            case INS_GET_BALANCE: 
+                if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+                handleGetBalance(apdu); return;
+            case INS_ADD_POINT: repository.addPoint(buf[ISO7816.OFFSET_P1]); return;
+            case INS_GET_POINT: 
+                short p = repository.getPoints(); buf[0] = (byte) p; 
+                apdu.setOutgoingAndSend((short)0, (short)1); return;
+
+            default: ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
+        }
+    }
+
+    // ---  HÀM UPLOAD (ENCRYPTED) ---
+    private void handleUpdateAvatarEncrypted(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        short length = apdu.setIncomingAndReceive();
+        
+        // Bt buc chia ht cho 16 ð m hóa
+        if (length % 16 != 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
+
+        short chunkOffset = Util.makeShort(
+            (byte) (buf[ISO7816.OFFSET_P1] & 0xFF), 
+            (byte) (buf[ISO7816.OFFSET_P2] & 0xFF)
+        );
+        
+        // 1. M hóa d liu ngay trong buffer (Plain -> Cipher)
+        security.encryptData(buf, ISO7816.OFFSET_CDATA, length, buf, ISO7816.OFFSET_CDATA);
+        
+        // 2. Lýu Ciphertext vào EEPROM
+        avatarObj.setData(buf, ISO7816.OFFSET_CDATA, chunkOffset, length);
+    }
+
+    // ---  HÀM DOWNLOAD (ENCRYPTED) ---
+    private void handleGetAvatarEncrypted(APDU apdu) {
+        byte[] data = avatarObj.getData(); // D liu này ðang b m hóa
+        short totalSize = avatarObj.getSize();
+        
+        short offset = Util.makeShort(
+            (byte) (apdu.getBuffer()[ISO7816.OFFSET_P1] & 0xFF), 
+            (byte) (apdu.getBuffer()[ISO7816.OFFSET_P2] & 0xFF)
+        );
+        
+        short lenToRead = apdu.setOutgoing(); 
+        
+        if (totalSize == 0 || offset >= totalSize) ISOException.throwIt(ISO7816.SW_RECORD_NOT_FOUND);
+        if ((short)(offset + lenToRead) > totalSize) lenToRead = (short)(totalSize - offset);
+        
+        // Ðm bo block 16 bytes khi gii m
+        // (Client nên gi Le = 240, nhýng nu l byte cui th phi x l cn thn hoc chp nhn li padding)
+        //  ðây gi ðnh Client luôn xin bi s ca 16
+        
+        apdu.setOutgoingLength(lenToRead);
+        
+        // 1. Copy Ciphertext ra Buffer gi
+        Util.arrayCopyNonAtomic(data, offset, apdu.getBuffer(), (short) 0, lenToRead);
+        
+        // 2. Gii m ti ch (Cipher -> Plain) ð gi v Client
+        security.decryptData(apdu.getBuffer(), (short) 0, lenToRead, apdu.getBuffer(), (short) 0);
+        
+        // 3. Gi Plaintext
+        apdu.sendBytes((short) 0, lenToRead);
+    }
+
+    // --- CÁC HÀM KHÁC GI NGUYÊN (Copy t file c ca bn) ---
+    private void handleVerifyPinEncrypted(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+        if (!security.verifyEncryptedPin(buf, ISO7816.OFFSET_CDATA, len)) ISOException.throwIt((short) 0x6300);
+    }
+    // ... Bn copy nt các hàm x l PIN, Info, Wallet vào ðây nhé ...
+    private void handleChangePin(APDU apdu) {
+        if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive();
+        security.changePin(buf, ISO7816.OFFSET_CDATA, (byte) len);
+    }
+    private void handleGetPublicKey(APDU apdu) {
+        byte[] buf = apdu.getBuffer(); short len = security.getPublicKey(buf, (short) 0); apdu.setOutgoingAndSend((short) 0, len);
+    }
+    private void handleAuthenticateRSA(APDU apdu) {
+        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive();
+        short sigLen = security.signData(buf, ISO7816.OFFSET_CDATA, len, buf, ISO7816.OFFSET_CDATA);
+        apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, sigLen);
+    }
+    private void handleUpdateInfo(APDU apdu) {
+        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive();
+        if (len != CardRepository.EMP_INFO_MAX) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        if (repository.isIdSet()) {
+            security.encryptData(buf, ISO7816.OFFSET_CDATA, CardRepository.EMP_ID_LEN, tempCompBuffer, (short) 0);
+            byte[] currentEncryptedInfo = repository.getEmpInfoBuffer();
+            if (Util.arrayCompare(tempCompBuffer, (short) 0, currentEncryptedInfo, CardRepository.EMP_ID_OFFSET, CardRepository.EMP_ID_LEN) != 0)
+                ISOException.throwIt(SW_EMP_ID_LOCKED);
+        }
+        security.encryptData(buf, ISO7816.OFFSET_CDATA, len, buf, ISO7816.OFFSET_CDATA);
+        repository.setEmpInfo(buf, ISO7816.OFFSET_CDATA, len);
+    }
+    // ... (Các hàm Wallet, Log copy týõng t) ...
+    private void handleGetBalance(APDU apdu) {
+        byte[] buf = apdu.getBuffer(); byte[] encryptedBal = repository.getBalanceBuffer();
+        if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) { Util.arrayFillNonAtomic(buf, (short)0, (short)4, (byte)0); apdu.setOutgoingAndSend((short) 0, (short) 4); return; }
+        security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
+        Util.arrayCopyNonAtomic(tempBalance, (short) 12, buf, (short) 0, (short) 4); apdu.setOutgoingAndSend((short) 0, (short) 4);
+    }
+    private void handleTopUp(APDU apdu) {
+        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); if (len != 4) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        byte[] encryptedBal = repository.getBalanceBuffer();
+        if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) Util.arrayFillNonAtomic(tempBalance, (short)0, (short)16, (byte)0);
+        else security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
+        repository.addUnsigned32(tempBalance, (short) 12, buf, ISO7816.OFFSET_CDATA);
+        security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); repository.setBalance(tempBalance, (short)0);
+    }
+    private void handlePay(APDU apdu) {
+        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); if (len != 4) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        byte[] encryptedBal = repository.getBalanceBuffer(); if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) ISOException.throwIt((short) 0x6A84);
+        security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
+        if (repository.compareUnsigned32(tempBalance, (short)12, buf, ISO7816.OFFSET_CDATA) < 0) ISOException.throwIt((short) 0x6A84);
+        repository.subUnsigned32(tempBalance, (short) 12, buf, ISO7816.OFFSET_CDATA);
+        short lowAmount = Util.getShort(buf, (short) (ISO7816.OFFSET_CDATA + 2)); if (lowAmount > 0) repository.addPoint((byte)(lowAmount / 10000));
+        security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); repository.setBalance(tempBalance, (short)0);
+    }
+    private void handleAddLog(APDU apdu) {
+         byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); if (len != 32) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+         security.encryptData(buf, ISO7816.OFFSET_CDATA, (short) 32, buf, ISO7816.OFFSET_CDATA); repository.addLog(buf, ISO7816.OFFSET_CDATA);
+    }
+    private void handleReadLogs(APDU apdu) {
+        byte[] logs = repository.getLogBuffer(); short total = repository.getTotalLogLen(); 
+        if (logs[0] == 0) { Util.arrayFillNonAtomic(apdu.getBuffer(), (short)0, total, (byte)0); apdu.setOutgoingAndSend((short)0, total); return; }
+        Util.arrayCopyNonAtomic(logs, (short)0, apdu.getBuffer(), (short)0, total);
+        security.decryptData(apdu.getBuffer(), (short)0, total, apdu.getBuffer(), (short)0); apdu.setOutgoingAndSend((short)0, total);
+    }
+}

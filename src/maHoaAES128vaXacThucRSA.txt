@@ -1,0 +1,46 @@
+
+### 1. Cấu hình Mã hóa & Bảo mật
+Hệ thống sử dụng mô hình lai (Hybrid Security):
+* **AES (Advanced Encryption Standard):** Dùng cho mã hóa dữ liệu và PIN.
+    * Độ dài khóa: 128-bit (16 bytes).
+    * Chế độ: ECB (Electronic Codebook).
+    * Padding: NoPadding.
+* **RSA (Rivest–Shamir–Adleman):** Dùng cho xác thực thẻ (Chống giả mạo).
+    * Độ dài khóa: 1024-bit.
+    * Thuật toán ký: SHA1withRSA (ALG_RSA_SHA_PKCS1).
+
+### 2. Chi tiết các mục được Mã hóa
+
+#### 🔒 A. Thông tin Nhân viên (Employee Info)
+* **Loại dữ liệu:** ID, Họ tên, Ngày sinh, Phòng ban, Chức vụ (Tổng 128 bytes).
+* **Kiểu mã hóa:** **Mã hóa khi lưu trữ** (Encryption at Rest).
+* **Hàm chứng minh (Trong `EmployeeApplet.java`):**
+    * **Ghi (Update):** `handleUpdateInfo` $\rightarrow$ Gọi `security.encryptData(...)` (AES) trước khi lưu vào `repository.setEmpInfo`.
+    * **Đọc (Read):** `process` (case `INS_READ_INFO`) $\rightarrow$ Gọi `security.decryptData(...)` (AES) giải mã dữ liệu lấy từ repository trước khi gửi ra ngoài.
+
+#### 🔒 B. Số dư Ví tiền (Wallet Balance)
+* **Loại dữ liệu:** Số tiền (Lưu trữ dưới dạng block 16 bytes trong thẻ, dù giá trị thực chỉ dùng 4 bytes).
+* **Kiểu mã hóa:** **Mã hóa khi lưu trữ** (Encryption at Rest).
+* **Hàm chứng minh (Trong `EmployeeApplet.java`):**
+    * **Nạp/Thanh toán:** `handleTopUp`/`handlePay` $\rightarrow$ Lấy 16 bytes từ kho $\rightarrow$ Giải mã (`decryptData`) $\rightarrow$ Tính toán cộng/trừ $\rightarrow$ Mã hóa lại (`encryptData`) $\rightarrow$ Lưu xuống.
+    * **Xem số dư:** `handleGetBalance` $\rightarrow$ Giải mã ra bộ đệm tạm $\rightarrow$ Chỉ lấy 4 byte số tiền thực gửi về máy tính.
+
+#### 🔒 C. Nhật ký Hoạt động (Logs)
+* **Loại dữ liệu:** Lịch sử Ra/Vào, Lịch sử Giao dịch (Mỗi bản ghi là 1 block 32 bytes).
+* **Kiểu mã hóa:** **Mã hóa khi lưu trữ** (Encryption at Rest).
+* **Hàm chứng minh (Trong `EmployeeApplet.java`):**
+    * **Ghi log:** `handleAddLog` $\rightarrow$ Nhận dữ liệu trần $\rightarrow$ Mã hóa (`encryptData`) $\rightarrow$ Lưu vào mảng log.
+    * **Đọc log:** `handleReadLogs` $\rightarrow$ Đọc mảng log mã hóa $\rightarrow$ Giải mã (`decryptData`) $\rightarrow$ Gửi về máy tính.
+
+#### 🛡️ D. Mã PIN
+* **Loại dữ liệu:** Chuỗi PIN xác thực người dùng (Ví dụ: "1234").
+* **Kiểu mã hóa:** **Mã hóa đường truyền** (Encryption in Transit).
+* **Hàm chứng minh (Trong `SecurityManager.java`):**
+    * `verifyEncryptedPin`: Nhận 16 bytes từ máy tính $\rightarrow$ Giải mã AES (`aesCipher.doFinal` mode DECRYPT) để lấy PIN gốc $\rightarrow$ So sánh với `OwnerPIN` (đối tượng bảo mật phần cứng của thẻ).
+
+#### 🔑 E. Xác thực Thẻ (Authentication) - *[Đã sửa lại cho đúng với RSA]*
+* **Loại dữ liệu:** Chuỗi ngẫu nhiên (Random Challenge) từ máy tính gửi xuống.
+* **Kiểu bảo mật:** **Chữ ký số** (Digital Signature) sử dụng khóa bất đối xứng RSA.
+* **Hàm chứng minh (Trong `SecurityManager.java`):**
+    * `signData`: Nhận chuỗi Challenge $\rightarrow$ Ký xác thực (`rsaSignature.sign` bằng **Private Key**) $\rightarrow$ Gửi chữ ký về máy tính.
+    * *(Máy tính sẽ dùng **Public Key** lấy từ thẻ để Verify chữ ký này. Nếu khớp, chứng tỏ thẻ nắm giữ đúng Private Key, là thẻ thật).*
