@@ -166,7 +166,8 @@ public class SecurityManager {
             pinTries--;
             isValidated = false;
             transientMasterKey.clearKey();
-            if (pinTries == 0) {}
+            if (pinTries == 0) 
+            	ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
             return false;
         }
     }
@@ -208,13 +209,22 @@ public class SecurityManager {
 
     // --- RSA AUTHENTICATION ---
 
+    // [Len Modulus (2b)] [Modulus Data] [Len Exponent (2b)] [Exponent Data]
     public short getPublicKey(byte[] dest, short off) {
-        short modLen = publicKey.getModulus(dest, off);
-        short expLen = publicKey.getExponent(dest, (short)(off + modLen));
-        return (short)(modLen + expLen);
+        // 2 byte dau ghi len Modulus
+        short modLen = publicKey.getModulus(dest, (short)(off + 2));
+        Util.setShort(dest, off, modLen);
+        
+        short expOff = (short)(off + 2 + modLen);
+        // 2 byte tiep ghi len Exponent
+        short expLen = publicKey.getExponent(dest, (short)(expOff + 2));
+        Util.setShort(dest, expOff, expLen);
+        
+        return (short)(2 + modLen + 2 + expLen);
     }
 
     public short signData(byte[] input, short inputOff, short inputLen, byte[] sigBuff, short sigOff) {
+        //if (!isValidated) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         rsaSignature.init(privateKey, Signature.MODE_SIGN);
         return rsaSignature.sign(input, inputOff, inputLen, sigBuff, sigOff);
     }

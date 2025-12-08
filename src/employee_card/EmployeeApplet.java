@@ -53,7 +53,7 @@ public class EmployeeApplet extends Applet {
             ISOException.throwIt(ISO7816.SW_FILE_FULL);
         }
         
-        tempCompBuffer = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
+        tempCompBuffer = JCSystem.makeTransientByteArray((short) 64, JCSystem.CLEAR_ON_DESELECT);
         tempBalance    = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
         
         register();
@@ -144,7 +144,7 @@ public class EmployeeApplet extends Applet {
         byte[] buf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
         
-        // Host gi 16 bytes Argon2 Hash xung
+        // Host gui 16 bytes Argon2 Hash xuong
         if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         
         security.setupFirstPin(buf, ISO7816.OFFSET_CDATA);
@@ -245,28 +245,88 @@ public class EmployeeApplet extends Applet {
     }
 
     private void handleGetBalance(APDU apdu) {
-        byte[] buf = apdu.getBuffer(); byte[] encryptedBal = repository.getBalanceBuffer();
-        if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) { Util.arrayFillNonAtomic(buf, (short)0, (short)4, (byte)0); apdu.setOutgoingAndSend((short) 0, (short) 4); return; }
+        byte[] buf = apdu.getBuffer(); 
+        byte[] encryptedBal = repository.getBalanceBuffer();
+        Util.arrayFillNonAtomic(tempCompBuffer, (short)0, (short)16, (byte)0);
+        if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) 
+        { 
+        	Util.arrayFillNonAtomic(buf, (short)0, (short)4, (byte)0); 
+        	apdu.setOutgoingAndSend((short) 0, (short) 4); return; 
+        }
         security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
-        Util.arrayCopyNonAtomic(tempBalance, (short) 12, buf, (short) 0, (short) 4); apdu.setOutgoingAndSend((short) 0, (short) 4);
+        Util.arrayCopyNonAtomic(tempBalance, (short) 12, buf, (short) 0, (short) 4); 
+        apdu.setOutgoingAndSend((short) 0, (short) 4);
     }
     private void handleTopUp(APDU apdu) {
-        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); if (len != 4) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); 
+        if (len != 4) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         byte[] encryptedBal = repository.getBalanceBuffer();
-        if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) Util.arrayFillNonAtomic(tempBalance, (short)0, (short)16, (byte)0);
+        Util.arrayFillNonAtomic(tempCompBuffer, (short)0, (short)16, (byte)0);
+        if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) 
+        	Util.arrayFillNonAtomic(tempBalance, (short)0, (short)16, (byte)0);
         else security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
         repository.addUnsigned32(tempBalance, (short) 12, buf, ISO7816.OFFSET_CDATA);
-        security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); repository.setBalance(tempBalance, (short)0);
+        security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); 
+        repository.setBalance(tempBalance, (short)0);
     }
     private void handlePay(APDU apdu) {
-        byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); if (len != 4) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        byte[] encryptedBal = repository.getBalanceBuffer(); if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) ISOException.throwIt((short) 0x6A84);
-        security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
-        if (repository.compareUnsigned32(tempBalance, (short)12, buf, ISO7816.OFFSET_CDATA) < 0) ISOException.throwIt((short) 0x6A84);
-        repository.subUnsigned32(tempBalance, (short) 12, buf, ISO7816.OFFSET_CDATA);
-        short lowAmount = Util.getShort(buf, (short) (ISO7816.OFFSET_CDATA + 2)); if (lowAmount > 0) repository.addPoint((byte)(lowAmount / 10000));
-        security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); repository.setBalance(tempBalance, (short)0);
+		byte[] buf = apdu.getBuffer();
+		short len = apdu.setIncomingAndReceive();
+    
+		// Amount(4) + Time(4) + UN(4) = 12 bytes
+		if (len != 12) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+    
+		if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+
+		// Decrypt -> Check -> Tr tin)
+		byte[] encryptedBal = repository.getBalanceBuffer();
+
+		Util.arrayFillNonAtomic(tempCompBuffer, (short)0, (short)64, (byte)0); // Clear trc
+		if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) 
+			ISOException.throwIt((short) 0x6A84); // Not enough money
+        
+		security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
+    
+		// tempBalance (offset 12) < Amount (Input offset CDATA)
+		if (repository.compareUnsigned32(tempBalance, (short)12, buf, ISO7816.OFFSET_CDATA) < 0) 
+			ISOException.throwIt((short) 0x6A84);
+        
+		// Tru tien
+		repository.subUnsigned32(tempBalance, (short) 12, buf, ISO7816.OFFSET_CDATA);
+    
+		// Tich iem ( Amount chia 10000)
+		short lowAmount = Util.getShort(buf, (short) (ISO7816.OFFSET_CDATA + 2)); 
+		if (lowAmount > 0) repository.addPoint((byte)(lowAmount / 10000));
+    
+		// save new bal (Encrypt -> Save)
+		security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); 
+		repository.setBalance(tempBalance, (short)0);
+
+		// [ID (16)] [Amount (4)] [Time (4)] [UN (4)]
+		short off = 0;
+    
+		byte[] encInfo = repository.getEmpInfoBuffer();
+		// Decrypt 16 byte (ID) vào tempCompBuffer ti offset 0
+		security.decryptData(encInfo, (short)0, (short)16, tempCompBuffer, (short)0); 
+		off += 16;
+    
+		// Copy Amount (4 bytes)
+		Util.arrayCopyNonAtomic(buf, ISO7816.OFFSET_CDATA, tempCompBuffer, off, (short) 4);
+		off += 4;
+    
+		// Copy Time (4 bytes)
+		Util.arrayCopyNonAtomic(buf, (short)(ISO7816.OFFSET_CDATA + 4), tempCompBuffer, off, (short) 4);
+		off += 4;
+    
+		// Copy UN (4 bytes) 
+		Util.arrayCopyNonAtomic(buf, (short)(ISO7816.OFFSET_CDATA + 8), tempCompBuffer, off, (short) 4);
+		off += 4; 
+
+		short sigLen = security.signData(tempCompBuffer, (short)0, off, buf, (short)0);
+
+		apdu.setOutgoingAndSend((short) 0, sigLen);
     }
+    
     private void handleAddLog(APDU apdu) {
          byte[] buf = apdu.getBuffer(); short len = apdu.setIncomingAndReceive(); if (len != 32) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
          security.encryptData(buf, ISO7816.OFFSET_CDATA, (short) 32, buf, ISO7816.OFFSET_CDATA); repository.addLog(buf, ISO7816.OFFSET_CDATA);
