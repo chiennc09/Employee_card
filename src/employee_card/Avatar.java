@@ -24,7 +24,7 @@ public class Avatar {
         // Copy d liu vào mng
         Util.arrayCopyNonAtomic(buffer, bufOffset, data, chunkOffset, chunkLength);
         
-        // Cp nht kích thýc thc t
+        // Cp nht kích thc thc t
         short newEnd = (short) (chunkOffset + chunkLength);
         if (newEnd > size) {
             size = newEnd;
