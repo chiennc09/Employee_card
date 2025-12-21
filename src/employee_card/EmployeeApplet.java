@@ -15,7 +15,7 @@ public class EmployeeApplet extends Applet {
     private static final byte INS_SETUP_PIN      = (byte) 0x29;
     private static final byte INS_CHECK_SETUP    = (byte) 0x2A;
 
-    // Các lnh dành cho Admin
+    // Admin
     private static final byte INS_LOCK_CARD      = (byte) 0x2B;
     private static final byte INS_UNLOCK_CARD    = (byte) 0x2C;
     private static final byte INS_RESET_PIN      = (byte) 0x2D;
@@ -119,7 +119,6 @@ public class EmployeeApplet extends Applet {
                 return;
                 
             case INS_VERIFY_PIN: 
-                // Xác thc PIN ngay ðon ðu khi qut th
                 handleVerifyPin(apdu); 
                 return;
                 
@@ -202,33 +201,42 @@ public class EmployeeApplet extends Applet {
         }
     }
 
-    // --- CÁC HÀM X L HANDLE ---
+    // -------------------------------------------------------------
     
     private void handleSetupPin(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
+        
+        // Host gui 16 bytes Argon2 Hash xuong
         if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        
         security.setupFirstPin(buf, ISO7816.OFFSET_CDATA);
     }
     
     private void handleVerifyPin(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
+        
+        // Host gui Argon2 (16 bytes)
+
         if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         
         if (!security.verifyPin(buf, ISO7816.OFFSET_CDATA)) {
-            // Nu sai PIN dn ðn khóa th (pinTries == 0), báo m li 62 83 ngay
+            // pinTries == 0 => 62 83
             if (security.isCardLocked()) {
                 ISOException.throwIt(SW_CARD_LOCKED);
             }
-            ISOException.throwIt(SW_AUTH_FAILED);
+            ISOException.throwIt(SW_AUTH_FAILED);// 0x6300
         }
     }
 
     private void handleChangePin(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
+        
+        // Host gui Argon2 (16 bytes)
         if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        
         security.changePin(buf, ISO7816.OFFSET_CDATA);
     }
 
@@ -243,21 +251,40 @@ public class EmployeeApplet extends Applet {
         byte[] buf = apdu.getBuffer();
         short length = apdu.setIncomingAndReceive();
         if (length % 16 != 0) ISOException.throwIt(ISO7816.SW_DATA_INVALID);
-        short chunkOffset = Util.makeShort((byte) (buf[ISO7816.OFFSET_P1] & 0xFF), (byte) (buf[ISO7816.OFFSET_P2] & 0xFF));
+        
+        short chunkOffset = Util.makeShort(
+			(byte) (buf[ISO7816.OFFSET_P1] & 0xFF), 
+			(byte) (buf[ISO7816.OFFSET_P2] & 0xFF)
+		);
+		
         security.encryptData(buf, ISO7816.OFFSET_CDATA, length, buf, ISO7816.OFFSET_CDATA);
+        
         avatarObj.setData(buf, ISO7816.OFFSET_CDATA, chunkOffset, length);
     }
 
     private void handleGetAvatarEncrypted(APDU apdu) {
         byte[] data = avatarObj.getData();
         short totalSize = avatarObj.getSize();
-        short offset = Util.makeShort((byte) (apdu.getBuffer()[ISO7816.OFFSET_P1] & 0xFF), (byte) (apdu.getBuffer()[ISO7816.OFFSET_P2] & 0xFF));
+        
+        short offset = Util.makeShort(
+			(byte) (apdu.getBuffer()[ISO7816.OFFSET_P1] & 0xFF), 
+			(byte) (apdu.getBuffer()[ISO7816.OFFSET_P2] & 0xFF)
+		);
+		
         short lenToRead = apdu.setOutgoing(); 
-        if (totalSize == 0 || offset >= totalSize) ISOException.throwIt(ISO7816.SW_RECORD_NOT_FOUND);
-        if ((short)(offset + lenToRead) > totalSize) lenToRead = (short)(totalSize - offset);
+        
+        if (totalSize == 0 || offset >= totalSize) 
+        	ISOException.throwIt(ISO7816.SW_RECORD_NOT_FOUND);
+        	
+        if ((short)(offset + lenToRead) > totalSize) 
+        	lenToRead = (short)(totalSize - offset);
+        	
         apdu.setOutgoingLength(lenToRead);
+        
         Util.arrayCopyNonAtomic(data, offset, apdu.getBuffer(), (short) 0, lenToRead);
+        
         security.decryptData(apdu.getBuffer(), (short) 0, lenToRead, apdu.getBuffer(), (short) 0);
+        
         apdu.sendBytes((short) 0, lenToRead);
     }
 
@@ -320,30 +347,56 @@ public class EmployeeApplet extends Applet {
     private void handlePay(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
+        
+        // Amount(4) + Time(4) + UN(4) = 12 bytes
         if (len != 12) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        
+        // Decrypt -> Check -> Tra tien)
         byte[] encryptedBal = repository.getBalanceBuffer();
+        
+        // Clear trc
         Util.arrayFillNonAtomic(tempCompBuffer, (short)0, (short)64, (byte)0);
         if (Util.arrayCompare(encryptedBal, (short)0, tempCompBuffer, (short)0, (short)16) == 0) 
             ISOException.throwIt((short) 0x6A84);
+            
         security.decryptData(encryptedBal, (short)0, (short)16, tempBalance, (short)0);
+        
+        // tempBalance (offset 12) < Amount (Input offset CDATA)
         if (repository.compareUnsigned32(tempBalance, (short)12, buf, ISO7816.OFFSET_CDATA) < 0) 
             ISOException.throwIt((short) 0x6A84);
+        
+        // Tru tien
         repository.subUnsigned32(tempBalance, (short) 12, buf, ISO7816.OFFSET_CDATA);
+        
         short lowAmount = Util.getShort(buf, (short) (ISO7816.OFFSET_CDATA + 2)); 
         if (lowAmount > 0) repository.addPoint((byte)(lowAmount / 10000));
+        
+        // save new bal (Encrypt -> Save)
         security.encryptData(tempBalance, (short)0, (short)16, tempBalance, (short)0); 
         repository.setBalance(tempBalance, (short)0);
+        
+        // [ID (16)] [Amount (4)] [Time (4)] [UN (4)]
         short off = 0;
         byte[] encInfo = repository.getEmpInfoBuffer();
+        
+        // Decrypt 16 byte (ID) vào tempCompBuffer toi offset 0
         security.decryptData(encInfo, (short)0, (short)16, tempCompBuffer, (short)0); 
         off += 16;
+        
+        // Copy Amount (4 bytes)
         Util.arrayCopyNonAtomic(buf, ISO7816.OFFSET_CDATA, tempCompBuffer, off, (short) 4);
         off += 4;
+        
+        // Copy Time (4 bytes)
         Util.arrayCopyNonAtomic(buf, (short)(ISO7816.OFFSET_CDATA + 4), tempCompBuffer, off, (short) 4);
         off += 4;
+        
+        // Copy UN (4 bytes)
         Util.arrayCopyNonAtomic(buf, (short)(ISO7816.OFFSET_CDATA + 8), tempCompBuffer, off, (short) 4);
         off += 4; 
+        
         short sigLen = security.signData(tempCompBuffer, (short)0, off, buf, (short)0);
+        
         apdu.setOutgoingAndSend((short) 0, sigLen);
     }
     
