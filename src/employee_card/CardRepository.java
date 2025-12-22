@@ -4,10 +4,14 @@ import javacard.framework.*;
 
 public class CardRepository {
 
-    // Config
-    public static final short EMP_INFO_MAX = 128;
-    public static final byte EMP_ID_LEN = 16;
-    public static final short EMP_ID_OFFSET = 0;
+    //CONFIG SIZES
+    public static final byte LEN_ID   = 16;
+    public static final byte LEN_NAME = 48;
+    public static final byte LEN_DOB  = 16;
+    public static final byte LEN_DEPT = 32;
+    public static final byte LEN_POS  = 32; 
+    
+    public static final short TOTAL_INFO_SIZE = (short)(LEN_ID + LEN_NAME + LEN_DOB + LEN_DEPT + LEN_POS);
     
     // Log & Balance Config
     private static final byte MAX_LOGS = 8;
@@ -16,16 +20,22 @@ public class CardRepository {
     private static final short BALANCE_STORAGE_LEN = 16;
     
     // Data Store (EEPROM)
-    private byte[] empInfo;
+    private byte[] encId;
+    private byte[] encName;
+    private byte[] encDob;
+    private byte[] encDept;
+    private byte[] encPos;
     private byte[] balance;
     private short points;
     private byte[] logs;
     private byte logIndex;
-    
-    // ( XA BIN AVATAR  CHUYN SANG CLASS Avatar.java)
 
     public CardRepository() {
-        empInfo = new byte[EMP_INFO_MAX];
+        encId = new byte[LEN_ID];
+        encName = new byte[LEN_NAME];
+        encDob = new byte[LEN_DOB];
+        encDept = new byte[LEN_DEPT];
+        encPos = new byte[LEN_POS];
         balance = new byte[BALANCE_STORAGE_LEN]; 
         logs = new byte[(short) (MAX_LOGS * LOG_SIZE)];
         points = 0;
@@ -33,22 +43,49 @@ public class CardRepository {
     }
 
     public boolean isIdSet() {
-        for (short i = 0; i < EMP_ID_LEN; i++) {
-            if (empInfo[(short) (EMP_ID_OFFSET + i)] != 0) return true;
+        for (short i = 0; i < LEN_ID; i++) {
+            if (encId[i] != 0) return true;
         }
         return false;
     }
 
-    public void setEmpInfo(byte[] src, short srcOff, short len) {
+    // --- SETTERS ---
+    public void setEncryptedId(byte[] src, short off) {
         JCSystem.beginTransaction();
-        Util.arrayCopy(src, srcOff, empInfo, (short) 0, len);
-        if (len < EMP_INFO_MAX) {
-            Util.arrayFillNonAtomic(empInfo, len, (short) (EMP_INFO_MAX - len), (byte) 0);
-        }
+        Util.arrayCopy(src, off, encId, (short)0, LEN_ID);
+        JCSystem.commitTransaction();
+    }
+    
+    public void setEncryptedName(byte[] src, short off) {
+        JCSystem.beginTransaction();
+        Util.arrayCopy(src, off, encName, (short)0, LEN_NAME);
         JCSystem.commitTransaction();
     }
 
-    public byte[] getEmpInfoBuffer() { return empInfo; }
+    public void setEncryptedDob(byte[] src, short off) {
+        JCSystem.beginTransaction();
+        Util.arrayCopy(src, off, encDob, (short)0, LEN_DOB);
+        JCSystem.commitTransaction();
+    }
+
+    public void setEncryptedDept(byte[] src, short off) {
+        JCSystem.beginTransaction();
+        Util.arrayCopy(src, off, encDept, (short)0, LEN_DEPT);
+        JCSystem.commitTransaction();
+    }
+
+    public void setEncryptedPos(byte[] src, short off) {
+        JCSystem.beginTransaction();
+        Util.arrayCopy(src, off, encPos, (short)0, LEN_POS);
+        JCSystem.commitTransaction();
+    }
+
+    // --- GETTERS ---
+    public byte[] getEncryptedId() { return encId; }
+    public byte[] getEncryptedName() { return encName; }
+    public byte[] getEncryptedDob() { return encDob; }
+    public byte[] getEncryptedDept() { return encDept; }
+    public byte[] getEncryptedPos() { return encPos; }
 
     public void addLog(byte[] src, short srcOff) {
         short base = (short) (logIndex * LOG_SIZE);

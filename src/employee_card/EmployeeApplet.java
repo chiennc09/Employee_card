@@ -148,14 +148,7 @@ public class EmployeeApplet extends Applet {
                 return;
                 
             case INS_READ_INFO:
-                if (!repository.isIdSet()) {
-                    Util.arrayFillNonAtomic(buf, (short)0, CardRepository.EMP_INFO_MAX, (byte)0);
-                    apdu.setOutgoingAndSend((short) 0, CardRepository.EMP_INFO_MAX);
-                    return;
-                }
-                byte[] encryptedInfo = repository.getEmpInfoBuffer();
-                security.decryptData(encryptedInfo, (short)0, CardRepository.EMP_INFO_MAX, buf, (short)0);
-                apdu.setOutgoingAndSend((short) 0, CardRepository.EMP_INFO_MAX);
+                handleReadInfo(apdu);
                 return;
 
             case INS_UPDATE_INFO:
@@ -301,18 +294,84 @@ public class EmployeeApplet extends Applet {
         apdu.setOutgoingAndSend(ISO7816.OFFSET_CDATA, sigLen);
     }
     
-    private void handleUpdateInfo(APDU apdu) {
-        byte[] buf = apdu.getBuffer(); 
-        short len = apdu.setIncomingAndReceive();
-        if (len != CardRepository.EMP_INFO_MAX) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-        if (repository.isIdSet()) {
-            security.encryptData(buf, ISO7816.OFFSET_CDATA, CardRepository.EMP_ID_LEN, tempCompBuffer, (short) 0);
-            byte[] currentEncryptedInfo = repository.getEmpInfoBuffer();
-            if (Util.arrayCompare(tempCompBuffer, (short) 0, currentEncryptedInfo, CardRepository.EMP_ID_OFFSET, CardRepository.EMP_ID_LEN) != 0)
-                ISOException.throwIt(SW_EMP_ID_LOCKED);
+    private void handleReadInfo(APDU apdu) {
+        if (!repository.isIdSet()) {
+            Util.arrayFillNonAtomic(apdu.getBuffer(), (short)0, CardRepository.TOTAL_INFO_SIZE, (byte)0);
+            apdu.setOutgoingAndSend((short) 0, CardRepository.TOTAL_INFO_SIZE);
+            return;
         }
-        security.encryptData(buf, ISO7816.OFFSET_CDATA, len, buf, ISO7816.OFFSET_CDATA);
-        repository.setEmpInfo(buf, ISO7816.OFFSET_CDATA, len);
+
+        byte[] buf = apdu.getBuffer();
+        short off = 0;
+
+        // 1. Decrypt ID -> buf
+        security.decryptData(repository.getEncryptedId(), (short)0, CardRepository.LEN_ID, buf, off);
+        off += CardRepository.LEN_ID;
+
+        // 2. Decrypt Name -> buf
+        security.decryptData(repository.getEncryptedName(), (short)0, CardRepository.LEN_NAME, buf, off);
+        off += CardRepository.LEN_NAME;
+
+        // 3. Decrypt DOB -> buf
+        security.decryptData(repository.getEncryptedDob(), (short)0, CardRepository.LEN_DOB, buf, off);
+        off += CardRepository.LEN_DOB;
+
+        // 4. Decrypt Dept -> buf
+        security.decryptData(repository.getEncryptedDept(), (short)0, CardRepository.LEN_DEPT, buf, off);
+        off += CardRepository.LEN_DEPT;
+
+        // 5. Decrypt Pos -> buf
+        security.decryptData(repository.getEncryptedPos(), (short)0, CardRepository.LEN_POS, buf, off);
+        off += CardRepository.LEN_POS;
+
+        // => Host
+        apdu.setOutgoingAndSend((short) 0, CardRepository.TOTAL_INFO_SIZE);
+    }
+    
+    private void handleUpdateInfo(APDU apdu) {
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+        
+        // Check len
+        if (len != CardRepository.TOTAL_INFO_SIZE) 
+            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+
+        // Check ID
+        if (repository.isIdSet()) {
+            // enc ID tu host
+            security.encryptData(buf, (short)0, CardRepository.LEN_ID, tempCompBuffer, (short)0);
+            
+            // Compare vs encID
+            if (Util.arrayCompare(tempCompBuffer, (short)0, repository.getEncryptedId(), (short)0, CardRepository.LEN_ID) != 0) {
+                ISOException.throwIt(SW_EMP_ID_LOCKED);
+            }
+        }
+
+        short currentOff = ISO7816.OFFSET_CDATA;
+
+        // 1. Process ID
+        security.encryptData(buf, currentOff, CardRepository.LEN_ID, tempCompBuffer, (short)0);
+        repository.setEncryptedId(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_ID;
+
+        // 2. Process Name
+        security.encryptData(buf, currentOff, CardRepository.LEN_NAME, tempCompBuffer, (short)0);
+        repository.setEncryptedName(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_NAME;
+
+        // 3. Process DOB
+        security.encryptData(buf, currentOff, CardRepository.LEN_DOB, tempCompBuffer, (short)0);
+        repository.setEncryptedDob(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_DOB;
+
+        // 4. Process Dept
+        security.encryptData(buf, currentOff, CardRepository.LEN_DEPT, tempCompBuffer, (short)0);
+        repository.setEncryptedDept(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_DEPT;
+
+        // 5. Process Pos
+        security.encryptData(buf, currentOff, CardRepository.LEN_POS, tempCompBuffer, (short)0);
+        repository.setEncryptedPos(tempCompBuffer, (short)0);
     }
 
     private void handleGetBalance(APDU apdu) {
@@ -377,10 +436,9 @@ public class EmployeeApplet extends Applet {
         
         // [ID (16)] [Amount (4)] [Time (4)] [UN (4)]
         short off = 0;
-        byte[] encInfo = repository.getEmpInfoBuffer();
         
-        // Decrypt 16 byte (ID) vào tempCompBuffer toi offset 0
-        security.decryptData(encInfo, (short)0, (short)16, tempCompBuffer, (short)0); 
+        // Decrypt ID -> tempCompBuffer
+        security.decryptData(repository.getEncryptedId(), (short)0, CardRepository.LEN_ID, tempCompBuffer, (short)0);
         off += 16;
         
         // Copy Amount (4 bytes)

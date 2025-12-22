@@ -1,5 +1,5 @@
 // converted by version 1.3
-// on Thu Dec 18 09:46:19 ICT 2025
+// on Mon Dec 22 21:08:22 ICT 2025
 
 .package employee_card {
 	.aid 0x11:0x22:0x33:0x44:0x0;
@@ -24,302 +24,330 @@
 		// 2
 		instanceFieldRef short Avatar/size;
 		// 3
-		instanceFieldRef byte[] CardRepository/empInfo;
+		instanceFieldRef byte[] CardRepository/encId;
 		// 4
-		instanceFieldRef byte[] CardRepository/balance;
+		instanceFieldRef byte[] CardRepository/encName;
 		// 5
-		instanceFieldRef byte[] CardRepository/logs;
+		instanceFieldRef byte[] CardRepository/encDob;
 		// 6
-		instanceFieldRef short CardRepository/points;
+		instanceFieldRef byte[] CardRepository/encDept;
 		// 7
-		instanceFieldRef byte CardRepository/logIndex;
+		instanceFieldRef byte[] CardRepository/encPos;
 		// 8
-		instanceFieldRef CardRepository EmployeeApplet/repository;
+		instanceFieldRef byte[] CardRepository/balance;
 		// 9
-		instanceFieldRef SecurityManager EmployeeApplet/security;
+		instanceFieldRef byte[] CardRepository/logs;
 		// 10
-		instanceFieldRef Avatar EmployeeApplet/avatarObj;
+		instanceFieldRef short CardRepository/points;
 		// 11
-		instanceFieldRef byte[] EmployeeApplet/tempCompBuffer;
+		instanceFieldRef byte CardRepository/logIndex;
 		// 12
-		instanceFieldRef byte[] EmployeeApplet/tempBalance;
+		instanceFieldRef CardRepository EmployeeApplet/repository;
 		// 13
-		instanceFieldRef boolean SecurityManager/isPinSet;
+		instanceFieldRef SecurityManager EmployeeApplet/security;
 		// 14
-		instanceFieldRef boolean SecurityManager/isValidated;
+		instanceFieldRef Avatar EmployeeApplet/avatarObj;
 		// 15
-		instanceFieldRef byte SecurityManager/pinTries;
+		instanceFieldRef byte[] EmployeeApplet/tempCompBuffer;
 		// 16
-		instanceFieldRef boolean SecurityManager/isCardLocked;
+		instanceFieldRef byte[] EmployeeApplet/tempBalance;
 		// 17
-		instanceFieldRef byte[] SecurityManager/salt;
+		instanceFieldRef boolean SecurityManager/isPinSet;
 		// 18
-		instanceFieldRef byte[] SecurityManager/encryptedMasterKey;
+		instanceFieldRef boolean SecurityManager/isValidated;
 		// 19
-		instanceFieldRef byte[] SecurityManager/masterKeyHash;
+		instanceFieldRef byte SecurityManager/pinTries;
 		// 20
-		instanceFieldRef byte[] SecurityManager/adminWrappedMasterKey;
+		instanceFieldRef boolean SecurityManager/isCardLocked;
 		// 21
-		instanceFieldRef 2.20 SecurityManager/transientMasterKey;
+		instanceFieldRef byte[] SecurityManager/salt;
 		// 22
-		instanceFieldRef 2.20 SecurityManager/wrapKey;
+		instanceFieldRef byte[] SecurityManager/encryptedMasterKey;
 		// 23
-		instanceFieldRef 3.1 SecurityManager/aesCipher;
+		instanceFieldRef byte[] SecurityManager/masterKeyHash;
 		// 24
-		instanceFieldRef 3.1 SecurityManager/keyWrapper;
+		instanceFieldRef byte[] SecurityManager/adminWrappedMasterKey;
 		// 25
-		instanceFieldRef 2.11 SecurityManager/sha1;
+		instanceFieldRef 2.20 SecurityManager/transientMasterKey;
 		// 26
-		instanceFieldRef 2.16 SecurityManager/rsaKeyPair;
+		instanceFieldRef 2.20 SecurityManager/wrapKey;
 		// 27
-		instanceFieldRef 2.8 SecurityManager/privateKey;
+		instanceFieldRef 3.1 SecurityManager/aesCipher;
 		// 28
-		instanceFieldRef 2.9 SecurityManager/publicKey;
+		instanceFieldRef 3.1 SecurityManager/keyWrapper;
 		// 29
-		instanceFieldRef 2.15 SecurityManager/rsaSignature;
+		instanceFieldRef 2.11 SecurityManager/sha1;
 		// 30
-		instanceFieldRef byte[] SecurityManager/tempBuffer;
+		instanceFieldRef 2.16 SecurityManager/rsaKeyPair;
 		// 31
-		staticMethodRef EmployeeApplet/<init>()V;
+		instanceFieldRef 2.8 SecurityManager/privateKey;
 		// 32
-		virtualMethodRef 1.3.3()Z;		// javacard/framework/Applet.selectingApplet()Z
+		instanceFieldRef 2.9 SecurityManager/publicKey;
 		// 33
-		virtualMethodRef SecurityManager/reset()V;
+		instanceFieldRef 2.15 SecurityManager/rsaSignature;
 		// 34
-		virtualMethodRef 1.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
+		instanceFieldRef byte[] SecurityManager/tempBuffer;
 		// 35
-		virtualMethodRef SecurityManager/isCardLocked()Z;
+		staticMethodRef EmployeeApplet/<init>()V;
 		// 36
-		virtualMethodRef 1.10.8(SS)V;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+		virtualMethodRef 1.3.3()Z;		// javacard/framework/Applet.selectingApplet()Z
 		// 37
-		virtualMethodRef SecurityManager/lockCard()V;
+		virtualMethodRef SecurityManager/reset()V;
 		// 38
-		virtualMethodRef SecurityManager/unlockCard()V;
+		virtualMethodRef 1.10.1()[B;		// javacard/framework/APDU.getBuffer()[B
 		// 39
+		virtualMethodRef SecurityManager/isCardLocked()Z;
+		// 40
+		virtualMethodRef 1.10.8(SS)V;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+		// 41
+		virtualMethodRef SecurityManager/lockCard()V;
+		// 42
+		virtualMethodRef SecurityManager/unlockCard()V;
+		// 43
 		staticMethodRef EmployeeApplet/handleResetPin(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 40
+		// 44
 		virtualMethodRef SecurityManager/isPinSet()Z;
-		// 41
+		// 45
 		staticMethodRef EmployeeApplet/handleSetupPin(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 42
+		// 46
 		virtualMethodRef SecurityManager/getSalt([BS)V;
-		// 43
+		// 47
 		staticMethodRef EmployeeApplet/handleVerifyPin(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 44
+		// 48
 		staticMethodRef EmployeeApplet/handleChangePin(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 45
+		// 49
 		virtualMethodRef SecurityManager/getTriesRemaining()B;
-		// 46
+		// 50
 		staticMethodRef EmployeeApplet/handleUpdateAvatarEncrypted(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 47
+		// 51
 		staticMethodRef EmployeeApplet/handleGetAvatarEncrypted(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 48
+		// 52
 		staticMethodRef EmployeeApplet/handleGetPublicKey(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 49
+		// 53
 		staticMethodRef EmployeeApplet/handleAuthenticateRSA(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-		// 50
-		virtualMethodRef CardRepository/isIdSet()Z;
-		// 51
-		virtualMethodRef CardRepository/getEmpInfoBuffer()[B;
-		// 52
-		virtualMethodRef SecurityManager/decryptData([BSS[BS)V;
-		// 53
-		virtualMethodRef SecurityManager/isValidated()Z;
 		// 54
-		staticMethodRef EmployeeApplet/handleUpdateInfo(Ljavacard/framework/APDU;)V;
+		staticMethodRef EmployeeApplet/handleReadInfo(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 		// 55
-		staticMethodRef EmployeeApplet/handleAddLog(Ljavacard/framework/APDU;)V;
-			.descriptor	Ljavacard/framework/APDU;	1.10;
-
+		virtualMethodRef SecurityManager/isValidated()Z;
 		// 56
-		staticMethodRef EmployeeApplet/handleReadLogs(Ljavacard/framework/APDU;)V;
+		staticMethodRef EmployeeApplet/handleUpdateInfo(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 		// 57
-		staticMethodRef EmployeeApplet/handleTopUp(Ljavacard/framework/APDU;)V;
+		staticMethodRef EmployeeApplet/handleAddLog(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 		// 58
-		staticMethodRef EmployeeApplet/handlePay(Ljavacard/framework/APDU;)V;
+		staticMethodRef EmployeeApplet/handleReadLogs(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 		// 59
-		staticMethodRef EmployeeApplet/handleGetBalance(Ljavacard/framework/APDU;)V;
+		staticMethodRef EmployeeApplet/handleTopUp(Ljavacard/framework/APDU;)V;
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 		// 60
-		virtualMethodRef CardRepository/addPoint(B)V;
+		staticMethodRef EmployeeApplet/handlePay(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
 		// 61
-		virtualMethodRef CardRepository/getPoints()S;
+		staticMethodRef EmployeeApplet/handleGetBalance(Ljavacard/framework/APDU;)V;
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
 		// 62
-		virtualMethodRef 1.10.6()S;		// javacard/framework/APDU.setIncomingAndReceive()S
+		virtualMethodRef CardRepository/addPoint(B)V;
 		// 63
-		virtualMethodRef SecurityManager/setupFirstPin([BS)V;
+		virtualMethodRef CardRepository/getPoints()S;
 		// 64
-		virtualMethodRef SecurityManager/verifyPin([BS)Z;
+		virtualMethodRef 1.10.6()S;		// javacard/framework/APDU.setIncomingAndReceive()S
 		// 65
-		virtualMethodRef SecurityManager/changePin([BS)V;
+		virtualMethodRef SecurityManager/setupFirstPin([BS)V;
 		// 66
-		virtualMethodRef SecurityManager/resetPin([BS)V;
+		virtualMethodRef SecurityManager/verifyPin([BS)Z;
 		// 67
-		staticMethodRef 1.16.5(BB)S;		// javacard/framework/Util.makeShort(BB)S
+		virtualMethodRef SecurityManager/changePin([BS)V;
 		// 68
-		virtualMethodRef SecurityManager/encryptData([BSS[BS)V;
+		virtualMethodRef SecurityManager/resetPin([BS)V;
 		// 69
-		virtualMethodRef Avatar/setData([BSSS)V;
+		staticMethodRef 1.16.5(BB)S;		// javacard/framework/Util.makeShort(BB)S
 		// 70
-		virtualMethodRef Avatar/getData()[B;
+		virtualMethodRef SecurityManager/encryptData([BSS[BS)V;
 		// 71
-		virtualMethodRef Avatar/getSize()S;
+		virtualMethodRef Avatar/setData([BSSS)V;
 		// 72
-		virtualMethodRef 1.10.7()S;		// javacard/framework/APDU.setOutgoing()S
+		virtualMethodRef Avatar/getData()[B;
 		// 73
-		virtualMethodRef 1.10.9(S)V;		// javacard/framework/APDU.setOutgoingLength(S)V
+		virtualMethodRef Avatar/getSize()S;
 		// 74
-		virtualMethodRef 1.10.4(SS)V;		// javacard/framework/APDU.sendBytes(SS)V
+		virtualMethodRef 1.10.7()S;		// javacard/framework/APDU.setOutgoing()S
 		// 75
-		virtualMethodRef SecurityManager/getPublicKey([BS)S;
+		virtualMethodRef 1.10.9(S)V;		// javacard/framework/APDU.setOutgoingLength(S)V
 		// 76
-		virtualMethodRef SecurityManager/signData([BSS[BS)S;
+		virtualMethodRef SecurityManager/decryptData([BSS[BS)V;
 		// 77
-		staticMethodRef 1.16.0([BS[BSS)B;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+		virtualMethodRef 1.10.4(SS)V;		// javacard/framework/APDU.sendBytes(SS)V
 		// 78
-		virtualMethodRef CardRepository/setEmpInfo([BSS)V;
+		virtualMethodRef SecurityManager/getPublicKey([BS)S;
 		// 79
-		virtualMethodRef CardRepository/getBalanceBuffer()[B;
+		virtualMethodRef SecurityManager/signData([BSS[BS)S;
 		// 80
-		virtualMethodRef CardRepository/addUnsigned32([BS[BS)V;
+		virtualMethodRef CardRepository/isIdSet()Z;
 		// 81
-		virtualMethodRef CardRepository/setBalance([BS)V;
+		virtualMethodRef CardRepository/getEncryptedId()[B;
 		// 82
-		virtualMethodRef CardRepository/compareUnsigned32([BS[BS)B;
+		virtualMethodRef CardRepository/getEncryptedName()[B;
 		// 83
-		virtualMethodRef CardRepository/subUnsigned32([BS[BS)V;
+		virtualMethodRef CardRepository/getEncryptedDob()[B;
 		// 84
-		staticMethodRef 1.16.4([BS)S;		// javacard/framework/Util.getShort([BS)S
+		virtualMethodRef CardRepository/getEncryptedDept()[B;
 		// 85
-		virtualMethodRef CardRepository/addLog([BS)V;
+		virtualMethodRef CardRepository/getEncryptedPos()[B;
 		// 86
-		virtualMethodRef CardRepository/getLogBuffer()[B;
+		staticMethodRef 1.16.0([BS[BSS)B;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 		// 87
-		virtualMethodRef CardRepository/getTotalLogLen()S;
+		virtualMethodRef CardRepository/setEncryptedId([BS)V;
 		// 88
-		classRef 2.12;		// javacard/security/CryptoException
+		virtualMethodRef CardRepository/setEncryptedName([BS)V;
 		// 89
-		staticMethodRef 1.16.3([BSSB)S;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+		virtualMethodRef CardRepository/setEncryptedDob([BS)V;
 		// 90
-		staticMethodRef 1.8.2()V;		// javacard/framework/JCSystem.commitTransaction()V
+		virtualMethodRef CardRepository/setEncryptedDept([BS)V;
 		// 91
-		classRef 1.13;		// javacard/framework/SystemException
+		virtualMethodRef CardRepository/setEncryptedPos([BS)V;
 		// 92
-		staticMethodRef 1.3.0()V;		// javacard/framework/Applet.<init>()V
+		virtualMethodRef CardRepository/getBalanceBuffer()[B;
 		// 93
-		classRef CardRepository;
+		virtualMethodRef CardRepository/addUnsigned32([BS[BS)V;
 		// 94
-		staticMethodRef CardRepository/<init>()V;
+		virtualMethodRef CardRepository/setBalance([BS)V;
 		// 95
-		staticMethodRef 1.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		virtualMethodRef CardRepository/compareUnsigned32([BS[BS)B;
 		// 96
-		classRef SecurityManager;
+		virtualMethodRef CardRepository/subUnsigned32([BS[BS)V;
 		// 97
+		staticMethodRef 1.16.4([BS)S;		// javacard/framework/Util.getShort([BS)S
+		// 98
+		virtualMethodRef CardRepository/addLog([BS)V;
+		// 99
+		virtualMethodRef CardRepository/getLogBuffer()[B;
+		// 100
+		virtualMethodRef CardRepository/getTotalLogLen()S;
+		// 101
+		classRef 2.12;		// javacard/security/CryptoException
+		// 102
+		staticMethodRef 1.8.2()V;		// javacard/framework/JCSystem.commitTransaction()V
+		// 103
+		staticMethodRef 1.16.3([BSSB)S;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+		// 104
+		classRef 1.13;		// javacard/framework/SystemException
+		// 105
+		staticMethodRef 1.3.0()V;		// javacard/framework/Applet.<init>()V
+		// 106
+		classRef CardRepository;
+		// 107
+		staticMethodRef CardRepository/<init>()V;
+		// 108
+		staticMethodRef 0.0.0()V;		// java/lang/Object.<init>()V
+		// 109
+		classRef SecurityManager;
+		// 110
 		staticMethodRef 2.13.0(BSZ)Ljavacard/security/Key;;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
 			.descriptor	Ljavacard/security/Key;	2.0;
 
-		// 98
+		// 111
 		classRef 2.20;		// javacard/security/AESKey
-		// 99
+		// 112
 		staticMethodRef SecurityManager/<init>()V;
-		// 100
-		staticMethodRef 0.0.0()V;		// java/lang/Object.<init>()V
-		// 101
+		// 113
+		staticMethodRef 1.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
+		// 114
 		staticMethodRef 3.1.0(BZ)Ljavacardx/crypto/Cipher;;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
 			.descriptor	Ljavacardx/crypto/Cipher;	3.1;
 
-		// 102
+		// 115
 		classRef Avatar;
-		// 103
+		// 116
 		staticMethodRef Avatar/<init>(S)V;
-		// 104
+		// 117
 		staticMethodRef 2.11.0(BZ)Ljavacard/security/MessageDigest;;		// javacard/security/MessageDigest.getInstance(BZ)Ljavacard/security/MessageDigest;
 			.descriptor	Ljavacard/security/MessageDigest;	2.11;
 
-		// 105
-		staticMethodRef 1.7.1(S)V;		// javacard/framework/ISOException.throwIt(S)V
-		// 106
+		// 118
+		staticMethodRef 1.16.2([BS[BSS)S;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+		// 119
 		classRef 2.16;		// javacard/security/KeyPair
-		// 107
+		// 120
 		staticMethodRef 2.16.0(BS)V;		// javacard/security/KeyPair.<init>(BS)V
-		// 108
+		// 121
 		staticMethodRef 1.8.13(SB)[B;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
-		// 109
+		// 122
 		virtualMethodRef 2.16.1()V;		// javacard/security/KeyPair.genKeyPair()V
-		// 110
+		// 123
 		virtualMethodRef 2.16.2()Ljavacard/security/PrivateKey;;		// javacard/security/KeyPair.getPrivate()Ljavacard/security/PrivateKey;
 			.descriptor	Ljavacard/security/PrivateKey;	2.2;
 
-		// 111
+		// 124
 		classRef 2.8;		// javacard/security/RSAPrivateKey
-		// 112
+		// 125
 		staticMethodRef 1.8.1()V;		// javacard/framework/JCSystem.beginTransaction()V
-		// 113
+		// 126
 		virtualMethodRef 2.16.3()Ljavacard/security/PublicKey;;		// javacard/security/KeyPair.getPublic()Ljavacard/security/PublicKey;
 			.descriptor	Ljavacard/security/PublicKey;	2.3;
 
-		// 114
+		// 127
 		classRef 2.9;		// javacard/security/RSAPublicKey
-		// 115
+		// 128
 		staticMethodRef 1.16.1([BS[BSS)S;		// javacard/framework/Util.arrayCopy([BS[BSS)S
-		// 116
+		// 129
 		staticMethodRef 2.15.0(BZ)Ljavacard/security/Signature;;		// javacard/security/Signature.getInstance(BZ)Ljavacard/security/Signature;
 			.descriptor	Ljavacard/security/Signature;	2.15;
 
-		// 117
+		// 130
 		virtualMethodRef 1.3.1()V;		// javacard/framework/Applet.register()V
-		// 118
+		// 131
 		classRef EmployeeApplet;
-		// 119
+		// 132
 		staticMethodRef SecurityManager/initSecureData()V;
-		// 120
+		// 133
 		staticMethodRef 2.14.0(B)Ljavacard/security/RandomData;;		// javacard/security/RandomData.getInstance(B)Ljavacard/security/RandomData;
 			.descriptor	Ljavacard/security/RandomData;	2.14;
 
-		// 121
+		// 134
 		virtualMethodRef 2.14.1([BSS)V;		// javacard/security/RandomData.generateData([BSS)V
-		// 122
+		// 135
 		virtualMethodRef 2.11.1([BSS[BS)S;		// javacard/security/MessageDigest.doFinal([BSS[BS)S
-		// 123
+		// 136
 		virtualMethodRef 3.1.3(Ljavacard/security/Key;B)V;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
 			.descriptor	Ljavacard/security/Key;	2.0;
 
-		// 124
+		// 137
 		virtualMethodRef 3.1.1([BSS[BS)S;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
-		// 125
+		// 138
 		staticFieldRef byte[] SecurityManager/ADMIN_STATIC_KEY;
-		// 126
+		// 139
 		staticMethodRef 1.16.6([BSS)S;		// javacard/framework/Util.setShort([BSS)S
-		// 127
+		// 140
 		virtualMethodRef 2.15.3(Ljavacard/security/Key;B)V;		// javacard/security/Signature.init(Ljavacard/security/Key;B)V
 			.descriptor	Ljavacard/security/Key;	2.0;
 
-		// 128
+		// 141
 		virtualMethodRef 2.15.5([BSS[BS)S;		// javacard/security/Signature.sign([BSS[BS)S
 	}
 
@@ -346,7 +374,7 @@
 			.locals 0;
 
 				L0:	aload_0;
-					invokespecial 100;		// java/lang/Object.<init>()V
+					invokespecial 108;		// java/lang/Object.<init>()V
 					aload_0;
 					sload_1;
 					putfield_s 0;		// short employee_card/Avatar.maxSize
@@ -370,13 +398,13 @@
 					getfield_s_this 0;		// short employee_card/Avatar.maxSize
 					if_scmple L2;
 				L1:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	aload_1;
 					sload_2;
 					getfield_a_this 1;		// reference employee_card/Avatar.data
 					sload_3;
 					sload 4;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					sload_3;
 					sload 4;
@@ -412,14 +440,21 @@
 	.class public CardRepository 1 extends 0.0 {		// extends java/lang/Object
 
 		.fields {
-			private byte[] empInfo 0;		// [B
-			private byte[] balance 1;		// [B
-			private byte[] logs 2;		// [B
-			private short points 3;		// S
-			private byte logIndex 4;		// B
-			public static final short EMP_INFO_MAX = 128;		// S
-			public static final byte EMP_ID_LEN = 16;		// B
-			public static final short EMP_ID_OFFSET = 0;		// S
+			private byte[] encId 0;		// [B
+			private byte[] encName 1;		// [B
+			private byte[] encDob 2;		// [B
+			private byte[] encDept 3;		// [B
+			private byte[] encPos 4;		// [B
+			private byte[] balance 5;		// [B
+			private byte[] logs 6;		// [B
+			private short points 7;		// S
+			private byte logIndex 8;		// B
+			public static final byte LEN_ID = 16;		// B
+			public static final byte LEN_NAME = 48;		// B
+			public static final byte LEN_DOB = 16;		// B
+			public static final byte LEN_DEPT = 32;		// B
+			public static final byte LEN_POS = 32;		// B
+			public static final short TOTAL_INFO_SIZE = 144;		// S
 			private static final byte MAX_LOGS = 8;		// B
 			private static final byte LOG_SIZE = 32;		// B
 			private static final short U32_LEN = 4;		// S
@@ -429,8 +464,16 @@
 		.publicMethodTable 1 {
 			equals(Ljava/lang/Object;)Z;
 			isIdSet()Z;
-			setEmpInfo([BSS)V;
-			getEmpInfoBuffer()[B;
+			setEncryptedId([BS)V;
+			setEncryptedName([BS)V;
+			setEncryptedDob([BS)V;
+			setEncryptedDept([BS)V;
+			setEncryptedPos([BS)V;
+			getEncryptedId()[B;
+			getEncryptedName()[B;
+			getEncryptedDob()[B;
+			getEncryptedDept()[B;
+			getEncryptedPos()[B;
 			addLog([BS)V;
 			getLogBuffer()[B;
 			getTotalLogLen()S;
@@ -451,30 +494,46 @@
 			.locals 0;
 
 				L0:	aload_0;
-					invokespecial 100;		// java/lang/Object.<init>()V
-					aload_0;
-					sspush 128;
-					newarray 11;
-					putfield_a 3;		// reference employee_card/CardRepository.empInfo
+					invokespecial 108;		// java/lang/Object.<init>()V
 					aload_0;
 					bspush 16;
 					newarray 11;
-					putfield_a 4;		// reference employee_card/CardRepository.balance
+					putfield_a 3;		// reference employee_card/CardRepository.encId
+					aload_0;
+					bspush 48;
+					newarray 11;
+					putfield_a 4;		// reference employee_card/CardRepository.encName
+					aload_0;
+					bspush 16;
+					newarray 11;
+					putfield_a 5;		// reference employee_card/CardRepository.encDob
+					aload_0;
+					bspush 32;
+					newarray 11;
+					putfield_a 6;		// reference employee_card/CardRepository.encDept
+					aload_0;
+					bspush 32;
+					newarray 11;
+					putfield_a 7;		// reference employee_card/CardRepository.encPos
+					aload_0;
+					bspush 16;
+					newarray 11;
+					putfield_a 8;		// reference employee_card/CardRepository.balance
 					aload_0;
 					sspush 256;
 					newarray 11;
-					putfield_a 5;		// reference employee_card/CardRepository.logs
+					putfield_a 9;		// reference employee_card/CardRepository.logs
 					aload_0;
 					sconst_0;
-					putfield_s 6;		// short employee_card/CardRepository.points
+					putfield_s 10;		// short employee_card/CardRepository.points
 					aload_0;
 					sconst_0;
-					putfield_b 7;		// byte employee_card/CardRepository.logIndex
+					putfield_b 11;		// byte employee_card/CardRepository.logIndex
 					return;
 		}
 
 		.method public isIdSet()Z 1 {
-			.stack 3;
+			.stack 2;
 			.locals 1;
 
 				L0:	sconst_0;
@@ -482,10 +541,8 @@
 				L1:	sload_1;
 					bspush 16;
 					if_scmpge L5;
-				L2:	getfield_a_this 3;		// reference employee_card/CardRepository.empInfo
-					sconst_0;
+				L2:	getfield_a_this 3;		// reference employee_card/CardRepository.encId
 					sload_1;
-					sadd;
 					baload;
 					ifeq L4;
 				L3:	sconst_1;
@@ -496,89 +553,174 @@
 					sreturn;
 		}
 
-		.method public setEmpInfo([BSS)V 2 {
+		.method public setEncryptedId([BS)V 2 {
 			.stack 5;
 			.locals 0;
 
-				L0:	invokestatic 112;		// javacard/framework/JCSystem.beginTransaction()V
+				L0:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
 					aload_1;
 					sload_2;
-					getfield_a_this 3;		// reference employee_card/CardRepository.empInfo
+					getfield_a_this 3;		// reference employee_card/CardRepository.encId
 					sconst_0;
-					sload_3;
-					invokestatic 115;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					bspush 16;
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
-					sload_3;
-					sspush 128;
-					if_scmpge L2;
-				L1:	getfield_a_this 3;		// reference employee_card/CardRepository.empInfo
-					sload_3;
-					sspush 128;
-					sload_3;
-					ssub;
-					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
-					pop;
-				L2:	invokestatic 90;		// javacard/framework/JCSystem.commitTransaction()V
+					invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
 					return;
 		}
 
-		.method public getEmpInfoBuffer()[B 3 {
+		.method public setEncryptedName([BS)V 3 {
+			.stack 5;
+			.locals 0;
+
+				L0:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_1;
+					sload_2;
+					getfield_a_this 4;		// reference employee_card/CardRepository.encName
+					sconst_0;
+					bspush 48;
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					pop;
+					invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
+					return;
+		}
+
+		.method public setEncryptedDob([BS)V 4 {
+			.stack 5;
+			.locals 0;
+
+				L0:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_1;
+					sload_2;
+					getfield_a_this 5;		// reference employee_card/CardRepository.encDob
+					sconst_0;
+					bspush 16;
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					pop;
+					invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
+					return;
+		}
+
+		.method public setEncryptedDept([BS)V 5 {
+			.stack 5;
+			.locals 0;
+
+				L0:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_1;
+					sload_2;
+					getfield_a_this 6;		// reference employee_card/CardRepository.encDept
+					sconst_0;
+					bspush 32;
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					pop;
+					invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
+					return;
+		}
+
+		.method public setEncryptedPos([BS)V 6 {
+			.stack 5;
+			.locals 0;
+
+				L0:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
+					aload_1;
+					sload_2;
+					getfield_a_this 7;		// reference employee_card/CardRepository.encPos
+					sconst_0;
+					bspush 32;
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					pop;
+					invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
+					return;
+		}
+
+		.method public getEncryptedId()[B 7 {
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_a_this 3;		// reference employee_card/CardRepository.empInfo
+				L0:	getfield_a_this 3;		// reference employee_card/CardRepository.encId
 					areturn;
 		}
 
-		.method public addLog([BS)V 4 {
+		.method public getEncryptedName()[B 8 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getfield_a_this 4;		// reference employee_card/CardRepository.encName
+					areturn;
+		}
+
+		.method public getEncryptedDob()[B 9 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getfield_a_this 5;		// reference employee_card/CardRepository.encDob
+					areturn;
+		}
+
+		.method public getEncryptedDept()[B 10 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getfield_a_this 6;		// reference employee_card/CardRepository.encDept
+					areturn;
+		}
+
+		.method public getEncryptedPos()[B 11 {
+			.stack 1;
+			.locals 0;
+
+				L0:	getfield_a_this 7;		// reference employee_card/CardRepository.encPos
+					areturn;
+		}
+
+		.method public addLog([BS)V 12 {
 			.stack 5;
 			.locals 1;
 
-				L0:	getfield_b_this 7;		// byte employee_card/CardRepository.logIndex
+				L0:	getfield_b_this 11;		// byte employee_card/CardRepository.logIndex
 					bspush 32;
 					smul;
 					sstore_3;
-				L1:	invokestatic 112;		// javacard/framework/JCSystem.beginTransaction()V
-					getfield_a_this 5;		// reference employee_card/CardRepository.logs
+				L1:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
+					getfield_a_this 9;		// reference employee_card/CardRepository.logs
 					sload_3;
 					bspush 32;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload_1;
 					sload_2;
-					getfield_a_this 5;		// reference employee_card/CardRepository.logs
+					getfield_a_this 9;		// reference employee_card/CardRepository.logs
 					sload_3;
 					bspush 32;
-					invokestatic 115;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
 					aload_0;
 					dup;
-					getfield_b 7;		// byte employee_card/CardRepository.logIndex
+					getfield_b 11;		// byte employee_card/CardRepository.logIndex
 					sconst_1;
 					sadd;
 					s2b;
-					putfield_b 7;		// byte employee_card/CardRepository.logIndex
-					getfield_b_this 7;		// byte employee_card/CardRepository.logIndex
+					putfield_b 11;		// byte employee_card/CardRepository.logIndex
+					getfield_b_this 11;		// byte employee_card/CardRepository.logIndex
 					bspush 8;
 					if_scmplt L3;
 				L2:	aload_0;
 					sconst_0;
-					putfield_b 7;		// byte employee_card/CardRepository.logIndex
-				L3:	invokestatic 90;		// javacard/framework/JCSystem.commitTransaction()V
+					putfield_b 11;		// byte employee_card/CardRepository.logIndex
+				L3:	invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
 					return;
 		}
 
-		.method public getLogBuffer()[B 5 {
+		.method public getLogBuffer()[B 13 {
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_a_this 5;		// reference employee_card/CardRepository.logs
+				L0:	getfield_a_this 9;		// reference employee_card/CardRepository.logs
 					areturn;
 		}
 
-		.method public getTotalLogLen()S 6 {
+		.method public getTotalLogLen()S 14 {
 			.stack 1;
 			.locals 0;
 
@@ -586,52 +728,52 @@
 					sreturn;
 		}
 
-		.method public addPoint(B)V 7 {
+		.method public addPoint(B)V 15 {
 			.stack 3;
 			.locals 0;
 
 				L0:	aload_0;
 					dup;
-					getfield_s 6;		// short employee_card/CardRepository.points
+					getfield_s 10;		// short employee_card/CardRepository.points
 					sload_1;
 					sadd;
-					putfield_s 6;		// short employee_card/CardRepository.points
+					putfield_s 10;		// short employee_card/CardRepository.points
 					return;
 		}
 
-		.method public getPoints()S 8 {
+		.method public getPoints()S 16 {
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_s_this 6;		// short employee_card/CardRepository.points
+				L0:	getfield_s_this 10;		// short employee_card/CardRepository.points
 					sreturn;
 		}
 
-		.method public getBalanceBuffer()[B 9 {
+		.method public getBalanceBuffer()[B 17 {
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_a_this 4;		// reference employee_card/CardRepository.balance
+				L0:	getfield_a_this 8;		// reference employee_card/CardRepository.balance
 					areturn;
 		}
 
-		.method public setBalance([BS)V 10 {
+		.method public setBalance([BS)V 18 {
 			.stack 5;
 			.locals 0;
 
-				L0:	invokestatic 112;		// javacard/framework/JCSystem.beginTransaction()V
+				L0:	invokestatic 125;		// javacard/framework/JCSystem.beginTransaction()V
 					aload_1;
 					sload_2;
-					getfield_a_this 4;		// reference employee_card/CardRepository.balance
+					getfield_a_this 8;		// reference employee_card/CardRepository.balance
 					sconst_0;
 					bspush 16;
-					invokestatic 115;		// javacard/framework/Util.arrayCopy([BS[BSS)S
+					invokestatic 128;		// javacard/framework/Util.arrayCopy([BS[BSS)S
 					pop;
-					invokestatic 90;		// javacard/framework/JCSystem.commitTransaction()V
+					invokestatic 102;		// javacard/framework/JCSystem.commitTransaction()V
 					return;
 		}
 
-		.method public addUnsigned32([BS[BS)V 11 {
+		.method public addUnsigned32([BS[BS)V 19 {
 			.stack 4;
 			.locals 3;
 
@@ -677,7 +819,7 @@
 				L6:	return;
 		}
 
-		.method public subUnsigned32([BS[BS)V 12 {
+		.method public subUnsigned32([BS[BS)V 20 {
 			.stack 4;
 			.locals 3;
 
@@ -728,7 +870,7 @@
 				L9:	return;
 		}
 
-		.method public compareUnsigned32([BS[BS)B 13 {
+		.method public compareUnsigned32([BS[BS)B 21 {
 			.stack 3;
 			.locals 3;
 
@@ -827,43 +969,43 @@
 			.locals 1;
 
 				L0:	aload_0;
-					invokespecial 92;		// javacard/framework/Applet.<init>()V
+					invokespecial 105;		// javacard/framework/Applet.<init>()V
 					aload_0;
-					new 93;		// employee_card/CardRepository
+					new 106;		// employee_card/CardRepository
 					dup;
-					invokespecial 94;		// employee_card/CardRepository.<init>()V
-					putfield_a 8;		// reference employee_card/EmployeeApplet.repository
+					invokespecial 107;		// employee_card/CardRepository.<init>()V
+					putfield_a 12;		// reference employee_card/EmployeeApplet.repository
 					aload_0;
-					new 96;		// employee_card/SecurityManager
+					new 109;		// employee_card/SecurityManager
 					dup;
-					invokespecial 99;		// employee_card/SecurityManager.<init>()V
-					putfield_a 9;		// reference employee_card/EmployeeApplet.security
+					invokespecial 112;		// employee_card/SecurityManager.<init>()V
+					putfield_a 13;		// reference employee_card/EmployeeApplet.security
 				L1:	aload_0;
-					new 102;		// employee_card/Avatar
+					new 115;		// employee_card/Avatar
 					dup;
 					sspush 8192;
-					invokespecial 103;		// employee_card/Avatar.<init>(S)V
-					putfield_a 10;		// reference employee_card/EmployeeApplet.avatarObj
+					invokespecial 116;		// employee_card/Avatar.<init>(S)V
+					putfield_a 14;		// reference employee_card/EmployeeApplet.avatarObj
 				L2:	goto L5;
 				L3:	astore_1;
 				L4:	sspush 27268;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L5:	aload_0;
 					bspush 64;
 					sconst_2;
-					invokestatic 108;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
-					putfield_a 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					invokestatic 121;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					aload_0;
 					bspush 16;
 					sconst_2;
-					invokestatic 108;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
-					putfield_a 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokestatic 121;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 16;		// reference employee_card/EmployeeApplet.tempBalance
 					aload_0;
-					invokevirtual 117;		// javacard/framework/Applet.register()V
+					invokevirtual 130;		// javacard/framework/Applet.register()V
 					return;
 			.exceptionTable {
 				// start_block end_block handler_block catch_type_index
-				L1 L2 L3 91;
+				L1 L2 L3 104;
 			}
 		}
 
@@ -871,27 +1013,27 @@
 			.stack 2;
 			.locals 0;
 
-				L0:	new 118;		// employee_card/EmployeeApplet
+				L0:	new 131;		// employee_card/EmployeeApplet
 					dup;
-					invokespecial 31;		// employee_card/EmployeeApplet.<init>()V
+					invokespecial 35;		// employee_card/EmployeeApplet.<init>()V
 					pop;
 					return;
 		}
 
 		.method public process(Ljavacard/framework/APDU;)V 7 {
-			.stack 6;
-			.locals 4;
+			.stack 3;
+			.locals 3;
 
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_0;
-					invokevirtual 32;		// javacard/framework/Applet.selectingApplet()Z
+					invokevirtual 36;		// javacard/framework/Applet.selectingApplet()Z
 					ifeq L2;
-				L1:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 33;		// employee_card/SecurityManager.reset()V
+				L1:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 37;		// employee_card/SecurityManager.reset()V
 					return;
 				L2:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L3:	aload_2;
 					sconst_1;
@@ -913,8 +1055,8 @@
 					stableswitch L16 43 46 L13 L14 L15 L9;
 				L9:	aload_2;
 					sconst_0;
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 35;		// employee_card/SecurityManager.isCardLocked()Z
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 39;		// employee_card/SecurityManager.isCardLocked()Z
 					ifeq L11;
 				L10:	sconst_1;
 					goto L12;
@@ -923,29 +1065,29 @@
 					aload_1;
 					sconst_0;
 					sconst_1;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
-				L13:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 37;		// employee_card/SecurityManager.lockCard()V
+				L13:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 41;		// employee_card/SecurityManager.lockCard()V
 					return;
-				L14:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 38;		// employee_card/SecurityManager.unlockCard()V
+				L14:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 42;		// employee_card/SecurityManager.unlockCard()V
 					return;
 				L15:	aload_0;
 					aload_1;
-					invokespecial 39;		// employee_card/EmployeeApplet.handleResetPin(Ljavacard/framework/APDU;)V
+					invokespecial 43;		// employee_card/EmployeeApplet.handleResetPin(Ljavacard/framework/APDU;)V
 					return;
-				L16:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 35;		// employee_card/SecurityManager.isCardLocked()Z
+				L16:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 39;		// employee_card/SecurityManager.isCardLocked()Z
 					ifeq L18;
 				L17:	sspush 25219;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L18:	sload_3;
-					stableswitch L53 16 84 L28 L29 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L26 L27 L53 L53 L25 L31 L30 L24 L23 L19 L53 L53 L53 L53 L53 L32 L36 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L39 L40 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L53 L43 L44 L47 L50 L51;
+					stableswitch L50 16 84 L28 L29 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L26 L27 L50 L50 L25 L31 L30 L24 L23 L19 L50 L50 L50 L50 L50 L32 L33 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L36 L37 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L50 L40 L41 L44 L47 L48;
 				L19:	aload_2;
 					sconst_0;
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 40;		// employee_card/SecurityManager.isPinSet()Z
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 44;		// employee_card/SecurityManager.isPinSet()Z
 					ifeq L21;
 				L20:	sconst_1;
 					goto L22;
@@ -954,150 +1096,125 @@
 					aload_1;
 					sconst_0;
 					sconst_1;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 				L23:	aload_0;
 					aload_1;
-					invokespecial 41;		// employee_card/EmployeeApplet.handleSetupPin(Ljavacard/framework/APDU;)V
+					invokespecial 45;		// employee_card/EmployeeApplet.handleSetupPin(Ljavacard/framework/APDU;)V
 					return;
-				L24:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+				L24:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_0;
-					invokevirtual 42;		// employee_card/SecurityManager.getSalt([BS)V
+					invokevirtual 46;		// employee_card/SecurityManager.getSalt([BS)V
 					aload_1;
 					sconst_0;
 					bspush 16;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 				L25:	aload_0;
 					aload_1;
-					invokespecial 43;		// employee_card/EmployeeApplet.handleVerifyPin(Ljavacard/framework/APDU;)V
+					invokespecial 47;		// employee_card/EmployeeApplet.handleVerifyPin(Ljavacard/framework/APDU;)V
 					return;
 				L26:	aload_0;
 					aload_1;
-					invokespecial 44;		// employee_card/EmployeeApplet.handleChangePin(Ljavacard/framework/APDU;)V
+					invokespecial 48;		// employee_card/EmployeeApplet.handleChangePin(Ljavacard/framework/APDU;)V
 					return;
 				L27:	aload_2;
 					sconst_0;
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 45;		// employee_card/SecurityManager.getTriesRemaining()B
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 49;		// employee_card/SecurityManager.getTriesRemaining()B
 					bastore;
 					aload_1;
 					sconst_0;
 					sconst_1;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 				L28:	aload_0;
 					aload_1;
-					invokespecial 46;		// employee_card/EmployeeApplet.handleUpdateAvatarEncrypted(Ljavacard/framework/APDU;)V
+					invokespecial 50;		// employee_card/EmployeeApplet.handleUpdateAvatarEncrypted(Ljavacard/framework/APDU;)V
 					return;
 				L29:	aload_0;
 					aload_1;
-					invokespecial 47;		// employee_card/EmployeeApplet.handleGetAvatarEncrypted(Ljavacard/framework/APDU;)V
+					invokespecial 51;		// employee_card/EmployeeApplet.handleGetAvatarEncrypted(Ljavacard/framework/APDU;)V
 					return;
 				L30:	aload_0;
 					aload_1;
-					invokespecial 48;		// employee_card/EmployeeApplet.handleGetPublicKey(Ljavacard/framework/APDU;)V
+					invokespecial 52;		// employee_card/EmployeeApplet.handleGetPublicKey(Ljavacard/framework/APDU;)V
 					return;
 				L31:	aload_0;
 					aload_1;
-					invokespecial 49;		// employee_card/EmployeeApplet.handleAuthenticateRSA(Ljavacard/framework/APDU;)V
+					invokespecial 53;		// employee_card/EmployeeApplet.handleAuthenticateRSA(Ljavacard/framework/APDU;)V
 					return;
-				L32:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 50;		// employee_card/CardRepository.isIdSet()Z
-					ifne L34;
-				L33:	aload_2;
-					sconst_0;
-					sspush 128;
-					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
-					pop;
+				L32:	aload_0;
 					aload_1;
-					sconst_0;
-					sspush 128;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokespecial 54;		// employee_card/EmployeeApplet.handleReadInfo(Ljavacard/framework/APDU;)V
 					return;
-				L34:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 51;		// employee_card/CardRepository.getEmpInfoBuffer()[B
-					astore 4;
-				L35:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					aload 4;
-					sconst_0;
-					sspush 128;
-					aload_2;
-					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+				L33:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 55;		// employee_card/SecurityManager.isValidated()Z
+					ifne L35;
+				L34:	sspush 27010;
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L35:	aload_0;
 					aload_1;
-					sconst_0;
-					sspush 128;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokespecial 56;		// employee_card/EmployeeApplet.handleUpdateInfo(Ljavacard/framework/APDU;)V
 					return;
-				L36:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 53;		// employee_card/SecurityManager.isValidated()Z
-					ifne L38;
-				L37:	sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L38:	aload_0;
+				L36:	aload_0;
 					aload_1;
-					invokespecial 54;		// employee_card/EmployeeApplet.handleUpdateInfo(Ljavacard/framework/APDU;)V
+					invokespecial 57;		// employee_card/EmployeeApplet.handleAddLog(Ljavacard/framework/APDU;)V
 					return;
+				L37:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 55;		// employee_card/SecurityManager.isValidated()Z
+					ifne L39;
+				L38:	sspush 27010;
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L39:	aload_0;
 					aload_1;
-					invokespecial 55;		// employee_card/EmployeeApplet.handleAddLog(Ljavacard/framework/APDU;)V
+					invokespecial 58;		// employee_card/EmployeeApplet.handleReadLogs(Ljavacard/framework/APDU;)V
 					return;
-				L40:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 53;		// employee_card/SecurityManager.isValidated()Z
-					ifne L42;
-				L41:	sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L42:	aload_0;
+				L40:	aload_0;
 					aload_1;
-					invokespecial 56;		// employee_card/EmployeeApplet.handleReadLogs(Ljavacard/framework/APDU;)V
+					invokespecial 59;		// employee_card/EmployeeApplet.handleTopUp(Ljavacard/framework/APDU;)V
 					return;
+				L41:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 55;		// employee_card/SecurityManager.isValidated()Z
+					ifne L43;
+				L42:	sspush 27010;
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L43:	aload_0;
 					aload_1;
-					invokespecial 57;		// employee_card/EmployeeApplet.handleTopUp(Ljavacard/framework/APDU;)V
+					invokespecial 60;		// employee_card/EmployeeApplet.handlePay(Ljavacard/framework/APDU;)V
 					return;
-				L44:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 53;		// employee_card/SecurityManager.isValidated()Z
+				L44:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 55;		// employee_card/SecurityManager.isValidated()Z
 					ifne L46;
 				L45:	sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L46:	aload_0;
 					aload_1;
-					invokespecial 58;		// employee_card/EmployeeApplet.handlePay(Ljavacard/framework/APDU;)V
+					invokespecial 61;		// employee_card/EmployeeApplet.handleGetBalance(Ljavacard/framework/APDU;)V
 					return;
-				L47:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 53;		// employee_card/SecurityManager.isValidated()Z
-					ifne L49;
-				L48:	sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L49:	aload_0;
-					aload_1;
-					invokespecial 59;		// employee_card/EmployeeApplet.handleGetBalance(Ljavacard/framework/APDU;)V
-					return;
-				L50:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
+				L47:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
 					aload_2;
 					sconst_2;
 					baload;
-					invokevirtual 60;		// employee_card/CardRepository.addPoint(B)V
+					invokevirtual 62;		// employee_card/CardRepository.addPoint(B)V
 					return;
-				L51:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 61;		// employee_card/CardRepository.getPoints()S
-					sstore 5;
-				L52:	aload_2;
+				L48:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 63;		// employee_card/CardRepository.getPoints()S
+					sstore 4;
+				L49:	aload_2;
 					sconst_0;
-					sload 5;
+					sload 4;
 					s2b;
 					bastore;
 					aload_1;
 					sconst_0;
 					sconst_1;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
-				L53:	sspush 27904;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L54:	return;
+				L50:	sspush 27904;
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L51:	return;
 		}
 
 		.method private handleSetupPin(Ljavacard/framework/APDU;)V {
@@ -1107,20 +1224,20 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 16;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
-					invokevirtual 63;		// employee_card/SecurityManager.setupFirstPin([BS)V
+					invokevirtual 65;		// employee_card/SecurityManager.setupFirstPin([BS)V
 					return;
 		}
 
@@ -1131,28 +1248,28 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 16;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
-					invokevirtual 64;		// employee_card/SecurityManager.verifyPin([BS)Z
+					invokevirtual 66;		// employee_card/SecurityManager.verifyPin([BS)Z
 					ifne L8;
-				L5:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					invokevirtual 35;		// employee_card/SecurityManager.isCardLocked()Z
+				L5:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					invokevirtual 39;		// employee_card/SecurityManager.isCardLocked()Z
 					ifeq L7;
 				L6:	sspush 25219;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L7:	sspush 25344;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L8:	return;
 		}
 
@@ -1163,20 +1280,20 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 16;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
-					invokevirtual 65;		// employee_card/SecurityManager.changePin([BS)V
+					invokevirtual 67;		// employee_card/SecurityManager.changePin([BS)V
 					return;
 		}
 
@@ -1187,20 +1304,20 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 16;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
-					invokevirtual 66;		// employee_card/SecurityManager.resetPin([BS)V
+					invokevirtual 68;		// employee_card/SecurityManager.resetPin([BS)V
 					return;
 		}
 
@@ -1211,17 +1328,17 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 16;
 					srem;
 					ifeq L4;
 				L3:	sspush 27012;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L4:	aload_2;
 					sconst_2;
 					baload;
@@ -1234,21 +1351,21 @@
 					sspush 255;
 					sand;
 					s2b;
-					invokestatic 67;		// javacard/framework/Util.makeShort(BB)S
+					invokestatic 69;		// javacard/framework/Util.makeShort(BB)S
 					sstore 4;
-				L5:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+				L5:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
 					sload_3;
 					aload_2;
 					sconst_5;
-					invokevirtual 68;		// employee_card/SecurityManager.encryptData([BSS[BS)V
-					getfield_a_this 10;		// reference employee_card/EmployeeApplet.avatarObj
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 14;		// reference employee_card/EmployeeApplet.avatarObj
 					aload_2;
 					sconst_5;
 					sload 4;
 					sload_3;
-					invokevirtual 69;		// employee_card/Avatar.setData([BSSS)V
+					invokevirtual 71;		// employee_card/Avatar.setData([BSSS)V
 					return;
 		}
 
@@ -1258,30 +1375,30 @@
 
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-				L0:	getfield_a_this 10;		// reference employee_card/EmployeeApplet.avatarObj
-					invokevirtual 70;		// employee_card/Avatar.getData()[B
+				L0:	getfield_a_this 14;		// reference employee_card/EmployeeApplet.avatarObj
+					invokevirtual 72;		// employee_card/Avatar.getData()[B
 					astore_2;
-				L1:	getfield_a_this 10;		// reference employee_card/EmployeeApplet.avatarObj
-					invokevirtual 71;		// employee_card/Avatar.getSize()S
+				L1:	getfield_a_this 14;		// reference employee_card/EmployeeApplet.avatarObj
+					invokevirtual 73;		// employee_card/Avatar.getSize()S
 					sstore_3;
 				L2:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_2;
 					baload;
 					sspush 255;
 					sand;
 					s2b;
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_3;
 					baload;
 					sspush 255;
 					sand;
 					s2b;
-					invokestatic 67;		// javacard/framework/Util.makeShort(BB)S
+					invokestatic 69;		// javacard/framework/Util.makeShort(BB)S
 					sstore 4;
 				L3:	aload_1;
-					invokevirtual 72;		// javacard/framework/APDU.setOutgoing()S
+					invokevirtual 74;		// javacard/framework/APDU.setOutgoing()S
 					sstore 5;
 				L4:	sload_3;
 					ifeq L6;
@@ -1289,7 +1406,7 @@
 					sload_3;
 					if_scmplt L7;
 				L6:	sspush 27267;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L7:	sload 4;
 					sload 5;
 					sadd;
@@ -1301,28 +1418,28 @@
 					sstore 5;
 				L9:	aload_1;
 					sload 5;
-					invokevirtual 73;		// javacard/framework/APDU.setOutgoingLength(S)V
+					invokevirtual 75;		// javacard/framework/APDU.setOutgoingLength(S)V
 					aload_2;
 					sload 4;
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
 					sload 5;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
 					sload 5;
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
 					aload_1;
 					sconst_0;
 					sload 5;
-					invokevirtual 74;		// javacard/framework/APDU.sendBytes(SS)V
+					invokevirtual 77;		// javacard/framework/APDU.sendBytes(SS)V
 					return;
 		}
 
@@ -1333,17 +1450,17 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
-				L1:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+				L1:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_0;
-					invokevirtual 75;		// employee_card/SecurityManager.getPublicKey([BS)S
+					invokevirtual 78;		// employee_card/SecurityManager.getPublicKey([BS)S
 					sstore_3;
 				L2:	aload_1;
 					sconst_0;
 					sload_3;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 		}
 
@@ -1354,23 +1471,101 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
-				L2:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+				L2:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
 					sload_3;
 					aload_2;
 					sconst_5;
-					invokevirtual 76;		// employee_card/SecurityManager.signData([BSS[BS)S
+					invokevirtual 79;		// employee_card/SecurityManager.signData([BSS[BS)S
 					sstore 4;
 				L3:	aload_1;
 					sconst_5;
 					sload 4;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					return;
+		}
+
+		.method private handleReadInfo(Ljavacard/framework/APDU;)V {
+			.stack 6;
+			.locals 2;
+
+			.descriptor	Ljavacard/framework/APDU;	1.10;
+
+				L0:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 80;		// employee_card/CardRepository.isIdSet()Z
+					ifne L2;
+				L1:	aload_1;
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
+					sconst_0;
+					sspush 144;
+					sconst_0;
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					pop;
+					aload_1;
+					sconst_0;
+					sspush 144;
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					return;
+				L2:	aload_1;
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
+					astore_2;
+				L3:	sconst_0;
+					sstore_3;
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 81;		// employee_card/CardRepository.getEncryptedId()[B
+					sconst_0;
+					bspush 16;
+					aload_2;
+					sload_3;
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					sinc 3 16;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 82;		// employee_card/CardRepository.getEncryptedName()[B
+					sconst_0;
+					bspush 48;
+					aload_2;
+					sload_3;
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					sinc 3 48;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 83;		// employee_card/CardRepository.getEncryptedDob()[B
+					sconst_0;
+					bspush 16;
+					aload_2;
+					sload_3;
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					sinc 3 16;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 84;		// employee_card/CardRepository.getEncryptedDept()[B
+					sconst_0;
+					bspush 32;
+					aload_2;
+					sload_3;
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					sinc 3 32;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 85;		// employee_card/CardRepository.getEncryptedPos()[B
+					sconst_0;
+					bspush 32;
+					aload_2;
+					sload_3;
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					sinc 3 32;
+					aload_1;
+					sconst_0;
+					sspush 144;
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 		}
 
@@ -1381,50 +1576,97 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
-					sspush 128;
+					sspush 144;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 50;		// employee_card/CardRepository.isIdSet()Z
-					ifeq L8;
-				L5:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 80;		// employee_card/CardRepository.isIdSet()Z
+					ifeq L7;
+				L5:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
-					sconst_5;
-					bspush 16;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
-					sconst_0;
-					invokevirtual 68;		// employee_card/SecurityManager.encryptData([BSS[BS)V
-					getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 51;		// employee_card/CardRepository.getEmpInfoBuffer()[B
-					astore 4;
-				L6:	getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
-					sconst_0;
-					aload 4;
 					sconst_0;
 					bspush 16;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
-					ifeq L8;
-				L7:	sspush 27013;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L8:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 81;		// employee_card/CardRepository.getEncryptedId()[B
+					sconst_0;
+					bspush 16;
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					ifeq L7;
+				L6:	sspush 27013;
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	sconst_5;
+					sstore 4;
+				L8:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
-					sconst_5;
-					sload_3;
+					sload 4;
+					bspush 16;
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 87;		// employee_card/CardRepository.setEncryptedId([BS)V
+					sinc 4 16;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
-					sconst_5;
-					invokevirtual 68;		// employee_card/SecurityManager.encryptData([BSS[BS)V
-					getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
+					sload 4;
+					bspush 48;
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 88;		// employee_card/CardRepository.setEncryptedName([BS)V
+					sinc 4 48;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
-					sconst_5;
-					sload_3;
-					invokevirtual 78;		// employee_card/CardRepository.setEmpInfo([BSS)V
+					sload 4;
+					bspush 16;
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 89;		// employee_card/CardRepository.setEncryptedDob([BS)V
+					sinc 4 16;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					aload_2;
+					sload 4;
+					bspush 32;
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 90;		// employee_card/CardRepository.setEncryptedDept([BS)V
+					sinc 4 32;
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					aload_2;
+					sload 4;
+					bspush 32;
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					sconst_0;
+					invokevirtual 91;		// employee_card/CardRepository.setEncryptedPos([BS)V
 					return;
 		}
 
@@ -1435,53 +1677,53 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
-				L1:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 79;		// employee_card/CardRepository.getBalanceBuffer()[B
+				L1:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 92;		// employee_card/CardRepository.getBalanceBuffer()[B
 					astore_3;
-				L2:	getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+				L2:	getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					bspush 16;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload_3;
 					sconst_0;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					bspush 16;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 					ifne L4;
 				L3:	aload_2;
 					sconst_0;
 					sconst_4;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload_1;
 					sconst_0;
 					sconst_4;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
-				L4:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_3;
 					sconst_0;
 					bspush 16;
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					bspush 12;
 					aload_2;
 					sconst_0;
 					sconst_4;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					aload_1;
 					sconst_0;
 					sconst_4;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 		}
 
@@ -1492,195 +1734,193 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					sconst_4;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 79;		// employee_card/CardRepository.getBalanceBuffer()[B
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 92;		// employee_card/CardRepository.getBalanceBuffer()[B
 					astore 4;
-				L5:	getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+				L5:	getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					bspush 16;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload 4;
 					sconst_0;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					bspush 16;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 					ifne L7;
-				L6:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+				L6:	getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
 					bspush 16;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					goto L8;
-				L7:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+				L7:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload 4;
 					sconst_0;
 					bspush 16;
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
-				L8:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+				L8:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					bspush 12;
 					aload_2;
 					sconst_5;
-					invokevirtual 80;		// employee_card/CardRepository.addUnsigned32([BS[BS)V
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 93;		// employee_card/CardRepository.addUnsigned32([BS[BS)V
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
 					bspush 16;
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 68;		// employee_card/SecurityManager.encryptData([BSS[BS)V
-					getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 81;		// employee_card/CardRepository.setBalance([BS)V
+					invokevirtual 94;		// employee_card/CardRepository.setBalance([BS)V
 					return;
 		}
 
 		.method private handlePay(Ljavacard/framework/APDU;)V {
 			.stack 6;
-			.locals 7;
+			.locals 6;
 
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 12;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 79;		// employee_card/CardRepository.getBalanceBuffer()[B
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 92;		// employee_card/CardRepository.getBalanceBuffer()[B
 					astore 4;
-				L5:	getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+				L5:	getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					bspush 64;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload 4;
 					sconst_0;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					bspush 16;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 					ifne L7;
 				L6:	sspush 27268;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L7:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload 4;
 					sconst_0;
 					bspush 16;
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
-					getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					bspush 12;
 					aload_2;
 					sconst_5;
-					invokevirtual 82;		// employee_card/CardRepository.compareUnsigned32([BS[BS)B
+					invokevirtual 95;		// employee_card/CardRepository.compareUnsigned32([BS[BS)B
 					ifge L9;
 				L8:	sspush 27268;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L9:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L9:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					bspush 12;
 					aload_2;
 					sconst_5;
-					invokevirtual 83;		// employee_card/CardRepository.subUnsigned32([BS[BS)V
+					invokevirtual 96;		// employee_card/CardRepository.subUnsigned32([BS[BS)V
 					aload_2;
 					bspush 7;
-					invokestatic 84;		// javacard/framework/Util.getShort([BS)S
+					invokestatic 97;		// javacard/framework/Util.getShort([BS)S
 					sstore 5;
 				L10:	sload 5;
 					ifle L12;
-				L11:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
+				L11:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
 					sload 5;
 					sspush 10000;
 					sdiv;
 					s2b;
-					invokevirtual 60;		// employee_card/CardRepository.addPoint(B)V
-				L12:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 62;		// employee_card/CardRepository.addPoint(B)V
+				L12:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
 					bspush 16;
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 68;		// employee_card/SecurityManager.encryptData([BSS[BS)V
-					getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					getfield_a_this 12;		// reference employee_card/EmployeeApplet.tempBalance
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					getfield_a_this 16;		// reference employee_card/EmployeeApplet.tempBalance
 					sconst_0;
-					invokevirtual 81;		// employee_card/CardRepository.setBalance([BS)V
+					invokevirtual 94;		// employee_card/CardRepository.setBalance([BS)V
 					sconst_0;
 					sstore 6;
-				L13:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 51;		// employee_card/CardRepository.getEmpInfoBuffer()[B
-					astore 7;
-				L14:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					aload 7;
+				L13:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 81;		// employee_card/CardRepository.getEncryptedId()[B
 					sconst_0;
 					bspush 16;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
 					sinc 6 16;
 					aload_2;
 					sconst_5;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sload 6;
 					sconst_4;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					sinc 6 4;
 					aload_2;
 					bspush 9;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sload 6;
 					sconst_4;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					sinc 6 4;
 					aload_2;
 					bspush 13;
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sload 6;
 					sconst_4;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					sinc 6 4;
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
-					getfield_a_this 11;		// reference employee_card/EmployeeApplet.tempCompBuffer
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 15;		// reference employee_card/EmployeeApplet.tempCompBuffer
 					sconst_0;
 					sload 6;
 					aload_2;
 					sconst_0;
-					invokevirtual 76;		// employee_card/SecurityManager.signData([BSS[BS)S
-					sstore 8;
-				L15:	aload_1;
+					invokevirtual 79;		// employee_card/SecurityManager.signData([BSS[BS)S
+					sstore 7;
+				L14:	aload_1;
 					sconst_0;
-					sload 8;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					sload 7;
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 		}
 
@@ -1691,27 +1931,27 @@
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
 				L0:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					astore_2;
 				L1:	aload_1;
-					invokevirtual 62;		// javacard/framework/APDU.setIncomingAndReceive()S
+					invokevirtual 64;		// javacard/framework/APDU.setIncomingAndReceive()S
 					sstore_3;
 				L2:	sload_3;
 					bspush 32;
 					if_scmpeq L4;
 				L3:	sspush 26368;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_2;
 					sconst_5;
 					bspush 32;
 					aload_2;
 					sconst_5;
-					invokevirtual 68;		// employee_card/SecurityManager.encryptData([BSS[BS)V
-					getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 70;		// employee_card/SecurityManager.encryptData([BSS[BS)V
+					getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
 					aload_2;
 					sconst_5;
-					invokevirtual 85;		// employee_card/CardRepository.addLog([BS)V
+					invokevirtual 98;		// employee_card/CardRepository.addLog([BS)V
 					return;
 		}
 
@@ -1721,49 +1961,49 @@
 
 			.descriptor	Ljavacard/framework/APDU;	1.10;
 
-				L0:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 86;		// employee_card/CardRepository.getLogBuffer()[B
+				L0:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 99;		// employee_card/CardRepository.getLogBuffer()[B
 					astore_2;
-				L1:	getfield_a_this 8;		// reference employee_card/EmployeeApplet.repository
-					invokevirtual 87;		// employee_card/CardRepository.getTotalLogLen()S
+				L1:	getfield_a_this 12;		// reference employee_card/EmployeeApplet.repository
+					invokevirtual 100;		// employee_card/CardRepository.getTotalLogLen()S
 					sstore_3;
 				L2:	aload_2;
 					sconst_0;
 					baload;
 					ifne L4;
 				L3:	aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
 					sload_3;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload_1;
 					sconst_0;
 					sload_3;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 				L4:	aload_2;
 					sconst_0;
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
 					sload_3;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
-					getfield_a_this 9;		// reference employee_card/EmployeeApplet.security
+					getfield_a_this 13;		// reference employee_card/EmployeeApplet.security
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
 					sload_3;
 					aload_1;
-					invokevirtual 34;		// javacard/framework/APDU.getBuffer()[B
+					invokevirtual 38;		// javacard/framework/APDU.getBuffer()[B
 					sconst_0;
-					invokevirtual 52;		// employee_card/SecurityManager.decryptData([BSS[BS)V
+					invokevirtual 76;		// employee_card/SecurityManager.decryptData([BSS[BS)V
 					aload_1;
 					sconst_0;
 					sload_3;
-					invokevirtual 36;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
+					invokevirtual 40;		// javacard/framework/APDU.setOutgoingAndSend(SS)V
 					return;
 		}
 
@@ -1825,103 +2065,103 @@
 			.locals 1;
 
 				L0:	aload_0;
-					invokespecial 100;		// java/lang/Object.<init>()V
+					invokespecial 108;		// java/lang/Object.<init>()V
 					aload_0;
 					sconst_0;
-					putfield_b 13;		// boolean employee_card/SecurityManager.isPinSet
+					putfield_b 17;		// boolean employee_card/SecurityManager.isPinSet
 					aload_0;
 					sconst_0;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
 					aload_0;
 					sconst_3;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					aload_0;
 					sconst_0;
-					putfield_b 16;		// boolean employee_card/SecurityManager.isCardLocked
+					putfield_b 20;		// boolean employee_card/SecurityManager.isCardLocked
 					aload_0;
 					bspush 16;
 					newarray 11;
-					putfield_a 17;		// reference employee_card/SecurityManager.salt
+					putfield_a 21;		// reference employee_card/SecurityManager.salt
 					aload_0;
 					bspush 16;
 					newarray 11;
-					putfield_a 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					putfield_a 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					aload_0;
 					bspush 20;
 					newarray 11;
-					putfield_a 19;		// reference employee_card/SecurityManager.masterKeyHash
+					putfield_a 23;		// reference employee_card/SecurityManager.masterKeyHash
 					aload_0;
 					bspush 16;
 					newarray 11;
-					putfield_a 20;		// reference employee_card/SecurityManager.adminWrappedMasterKey
+					putfield_a 24;		// reference employee_card/SecurityManager.adminWrappedMasterKey
 				L1:	aload_0;
 					bspush 15;
 					sspush 128;
 					sconst_0;
-					invokestatic 97;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
-					checkcast 0 98;		// T_CLASSORINTERFACE javacard/security/AESKey
-					putfield_a 21;		// reference employee_card/SecurityManager.transientMasterKey
+					invokestatic 110;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
+					checkcast 0 111;		// T_CLASSORINTERFACE javacard/security/AESKey
+					putfield_a 25;		// reference employee_card/SecurityManager.transientMasterKey
 					aload_0;
 					bspush 15;
 					sspush 128;
 					sconst_0;
-					invokestatic 97;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
-					checkcast 0 98;		// T_CLASSORINTERFACE javacard/security/AESKey
-					putfield_a 22;		// reference employee_card/SecurityManager.wrapKey
+					invokestatic 110;		// javacard/security/KeyBuilder.buildKey(BSZ)Ljavacard/security/Key;
+					checkcast 0 111;		// T_CLASSORINTERFACE javacard/security/AESKey
+					putfield_a 26;		// reference employee_card/SecurityManager.wrapKey
 					aload_0;
 					bspush 14;
 					sconst_0;
-					invokestatic 101;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
-					putfield_a 23;		// reference employee_card/SecurityManager.aesCipher
+					invokestatic 114;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
+					putfield_a 27;		// reference employee_card/SecurityManager.aesCipher
 					aload_0;
 					bspush 14;
 					sconst_0;
-					invokestatic 101;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
-					putfield_a 24;		// reference employee_card/SecurityManager.keyWrapper
+					invokestatic 114;		// javacardx/crypto/Cipher.getInstance(BZ)Ljavacardx/crypto/Cipher;
+					putfield_a 28;		// reference employee_card/SecurityManager.keyWrapper
 					aload_0;
 					sconst_1;
 					sconst_0;
-					invokestatic 104;		// javacard/security/MessageDigest.getInstance(BZ)Ljavacard/security/MessageDigest;
-					putfield_a 25;		// reference employee_card/SecurityManager.sha1
+					invokestatic 117;		// javacard/security/MessageDigest.getInstance(BZ)Ljavacard/security/MessageDigest;
+					putfield_a 29;		// reference employee_card/SecurityManager.sha1
 					aload_0;
-					new 106;		// javacard/security/KeyPair
+					new 119;		// javacard/security/KeyPair
 					dup;
 					sconst_1;
 					sspush 1024;
-					invokespecial 107;		// javacard/security/KeyPair.<init>(BS)V
-					putfield_a 26;		// reference employee_card/SecurityManager.rsaKeyPair
-					getfield_a_this 26;		// reference employee_card/SecurityManager.rsaKeyPair
-					invokevirtual 109;		// javacard/security/KeyPair.genKeyPair()V
+					invokespecial 120;		// javacard/security/KeyPair.<init>(BS)V
+					putfield_a 30;		// reference employee_card/SecurityManager.rsaKeyPair
+					getfield_a_this 30;		// reference employee_card/SecurityManager.rsaKeyPair
+					invokevirtual 122;		// javacard/security/KeyPair.genKeyPair()V
 					aload_0;
-					getfield_a_this 26;		// reference employee_card/SecurityManager.rsaKeyPair
-					invokevirtual 110;		// javacard/security/KeyPair.getPrivate()Ljavacard/security/PrivateKey;
-					checkcast 0 111;		// T_CLASSORINTERFACE javacard/security/RSAPrivateKey
-					putfield_a 27;		// reference employee_card/SecurityManager.privateKey
+					getfield_a_this 30;		// reference employee_card/SecurityManager.rsaKeyPair
+					invokevirtual 123;		// javacard/security/KeyPair.getPrivate()Ljavacard/security/PrivateKey;
+					checkcast 0 124;		// T_CLASSORINTERFACE javacard/security/RSAPrivateKey
+					putfield_a 31;		// reference employee_card/SecurityManager.privateKey
 					aload_0;
-					getfield_a_this 26;		// reference employee_card/SecurityManager.rsaKeyPair
-					invokevirtual 113;		// javacard/security/KeyPair.getPublic()Ljavacard/security/PublicKey;
-					checkcast 0 114;		// T_CLASSORINTERFACE javacard/security/RSAPublicKey
-					putfield_a 28;		// reference employee_card/SecurityManager.publicKey
+					getfield_a_this 30;		// reference employee_card/SecurityManager.rsaKeyPair
+					invokevirtual 126;		// javacard/security/KeyPair.getPublic()Ljavacard/security/PublicKey;
+					checkcast 0 127;		// T_CLASSORINTERFACE javacard/security/RSAPublicKey
+					putfield_a 32;		// reference employee_card/SecurityManager.publicKey
 					aload_0;
 					bspush 10;
 					sconst_0;
-					invokestatic 116;		// javacard/security/Signature.getInstance(BZ)Ljavacard/security/Signature;
-					putfield_a 29;		// reference employee_card/SecurityManager.rsaSignature
+					invokestatic 129;		// javacard/security/Signature.getInstance(BZ)Ljavacard/security/Signature;
+					putfield_a 33;		// reference employee_card/SecurityManager.rsaSignature
 					aload_0;
 					bspush 64;
 					sconst_2;
-					invokestatic 108;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
-					putfield_a 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokestatic 121;		// javacard/framework/JCSystem.makeTransientByteArray(SB)[B
+					putfield_a 34;		// reference employee_card/SecurityManager.tempBuffer
 					aload_0;
-					invokespecial 119;		// employee_card/SecurityManager.initSecureData()V
+					invokespecial 132;		// employee_card/SecurityManager.initSecureData()V
 				L2:	goto L5;
 				L3:	astore_1;
 				L4:	sspush 27265;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L5:	return;
 			.exceptionTable {
 				// start_block end_block handler_block catch_type_index
-				L1 L2 L3 88;
+				L1 L2 L3 101;
 			}
 		}
 
@@ -1930,13 +2170,13 @@
 			.locals 1;
 
 				L0:	sconst_2;
-					invokestatic 120;		// javacard/security/RandomData.getInstance(B)Ljavacard/security/RandomData;
+					invokestatic 133;		// javacard/security/RandomData.getInstance(B)Ljavacard/security/RandomData;
 					astore_1;
 				L1:	aload_1;
-					getfield_a_this 17;		// reference employee_card/SecurityManager.salt
+					getfield_a_this 21;		// reference employee_card/SecurityManager.salt
 					sconst_0;
 					bspush 16;
-					invokevirtual 121;		// javacard/security/RandomData.generateData([BSS)V
+					invokevirtual 134;		// javacard/security/RandomData.generateData([BSS)V
 					return;
 		}
 
@@ -1944,12 +2184,12 @@
 			.stack 5;
 			.locals 0;
 
-				L0:	getfield_a_this 17;		// reference employee_card/SecurityManager.salt
+				L0:	getfield_a_this 21;		// reference employee_card/SecurityManager.salt
 					sconst_0;
 					aload_1;
 					sload_2;
 					bspush 16;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
 					return;
 		}
@@ -1958,7 +2198,7 @@
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_b_this 13;		// boolean employee_card/SecurityManager.isPinSet
+				L0:	getfield_b_this 17;		// boolean employee_card/SecurityManager.isPinSet
 					sreturn;
 		}
 
@@ -1966,7 +2206,7 @@
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_b_this 15;		// byte employee_card/SecurityManager.pinTries
+				L0:	getfield_b_this 19;		// byte employee_card/SecurityManager.pinTries
 					sreturn;
 		}
 
@@ -1974,7 +2214,7 @@
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_b_this 14;		// boolean employee_card/SecurityManager.isValidated
+				L0:	getfield_b_this 18;		// boolean employee_card/SecurityManager.isValidated
 					sreturn;
 		}
 
@@ -1982,7 +2222,7 @@
 			.stack 1;
 			.locals 0;
 
-				L0:	getfield_b_this 16;		// boolean employee_card/SecurityManager.isCardLocked
+				L0:	getfield_b_this 20;		// boolean employee_card/SecurityManager.isCardLocked
 					sreturn;
 		}
 
@@ -1992,9 +2232,9 @@
 
 				L0:	aload_0;
 					sconst_0;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 0;		// javacard/security/AESKey
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 0;		// javacard/security/AESKey
 					return;
 		}
 
@@ -2002,80 +2242,80 @@
 			.stack 6;
 			.locals 1;
 
-				L0:	getfield_b_this 13;		// boolean employee_card/SecurityManager.isPinSet
+				L0:	getfield_b_this 17;		// boolean employee_card/SecurityManager.isPinSet
 					ifeq L2;
 				L1:	sspush 27013;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
 				L2:	sconst_2;
-					invokestatic 120;		// javacard/security/RandomData.getInstance(B)Ljavacard/security/RandomData;
+					invokestatic 133;		// javacard/security/RandomData.getInstance(B)Ljavacard/security/RandomData;
 					astore_3;
 				L3:	aload_3;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					invokevirtual 121;		// javacard/security/RandomData.generateData([BSS)V
-					getfield_a_this 25;		// reference employee_card/SecurityManager.sha1
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 134;		// javacard/security/RandomData.generateData([BSS)V
+					getfield_a_this 29;		// reference employee_card/SecurityManager.sha1
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 19;		// reference employee_card/SecurityManager.masterKeyHash
+					getfield_a_this 23;		// reference employee_card/SecurityManager.masterKeyHash
 					sconst_0;
-					invokevirtual 122;		// javacard/security/MessageDigest.doFinal([BSS[BS)S
+					invokevirtual 135;		// javacard/security/MessageDigest.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					aload_1;
 					sload_2;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					getfield_a_this 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					sconst_0;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
-					getstatic_a 125;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
+					getstatic_a 138;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
 					sconst_0;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 20;		// reference employee_card/SecurityManager.adminWrappedMasterKey
+					getfield_a_this 24;		// reference employee_card/SecurityManager.adminWrappedMasterKey
 					sconst_0;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload_0;
 					sconst_1;
-					putfield_b 13;		// boolean employee_card/SecurityManager.isPinSet
+					putfield_b 17;		// boolean employee_card/SecurityManager.isPinSet
 					aload_0;
 					sconst_1;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
 					aload_0;
 					sconst_0;
-					putfield_b 16;		// boolean employee_card/SecurityManager.isCardLocked
+					putfield_b 20;		// boolean employee_card/SecurityManager.isCardLocked
 					aload_0;
 					sconst_3;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					return;
 		}
 
@@ -2083,48 +2323,48 @@
 			.stack 6;
 			.locals 1;
 
-				L0:	getfield_b_this 13;		// boolean employee_card/SecurityManager.isPinSet
+				L0:	getfield_b_this 17;		// boolean employee_card/SecurityManager.isPinSet
 					ifne L2;
 				L1:	sspush 27013;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L2:	getfield_b_this 16;		// boolean employee_card/SecurityManager.isCardLocked
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_b_this 20;		// boolean employee_card/SecurityManager.isCardLocked
 					ifeq L4;
 				L3:	sspush 25219;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L4:	getfield_b_this 15;		// byte employee_card/SecurityManager.pinTries
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L4:	getfield_b_this 19;		// byte employee_card/SecurityManager.pinTries
 					ifne L6;
 				L5:	sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L6:	getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L6:	getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					aload_1;
 					sload_2;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_1;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					sconst_0;
 					bspush 16;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 25;		// reference employee_card/SecurityManager.sha1
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 29;		// reference employee_card/SecurityManager.sha1
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					invokevirtual 122;		// javacard/security/MessageDigest.doFinal([BSS[BS)S
+					invokevirtual 135;		// javacard/security/MessageDigest.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					getfield_a_this 19;		// reference employee_card/SecurityManager.masterKeyHash
+					getfield_a_this 23;		// reference employee_card/SecurityManager.masterKeyHash
 					sconst_0;
 					bspush 20;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 					ifne L8;
 				L7:	sconst_1;
 					goto L9;
@@ -2134,46 +2374,46 @@
 					ifeq L12;
 				L11:	aload_0;
 					sconst_3;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					aload_0;
 					sconst_1;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 64;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					sconst_1;
 					sreturn;
 				L12:	aload_0;
 					dup;
-					getfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					getfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					sconst_1;
 					ssub;
 					s2b;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					aload_0;
 					sconst_0;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 0;		// javacard/security/AESKey
-					getfield_b_this 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 0;		// javacard/security/AESKey
+					getfield_b_this 19;		// byte employee_card/SecurityManager.pinTries
 					ifne L14;
 				L13:	aload_0;
 					sconst_1;
-					putfield_b 16;		// boolean employee_card/SecurityManager.isCardLocked
+					putfield_b 20;		// boolean employee_card/SecurityManager.isCardLocked
 					sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L14:	getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L14:	getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 64;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					sconst_0;
 					sreturn;
@@ -2183,71 +2423,71 @@
 			.stack 6;
 			.locals 0;
 
-				L0:	getfield_b_this 14;		// boolean employee_card/SecurityManager.isValidated
+				L0:	getfield_b_this 18;		// boolean employee_card/SecurityManager.isValidated
 					ifeq L2;
-				L1:	getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 3;		// javacard/security/AESKey
+				L1:	getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 3;		// javacard/security/AESKey
 					ifne L3;
 				L2:	sspush 27013;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L3:	getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L3:	getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
-					invokeinterface 3 98 5;		// javacard/security/AESKey
+					invokeinterface 3 111 5;		// javacard/security/AESKey
 					pop;
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					aload_1;
 					sload_2;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					getfield_a_this 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					getfield_a_this 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					sconst_0;
 					bspush 16;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 					ifne L5;
 				L4:	sspush 27273;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L5:	getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L5:	getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					getfield_a_this 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					getfield_a_this 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					sconst_0;
 					bspush 16;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
-					getstatic_a 125;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
+					getstatic_a 138;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
 					sconst_0;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 20;		// reference employee_card/SecurityManager.adminWrappedMasterKey
+					getfield_a_this 24;		// reference employee_card/SecurityManager.adminWrappedMasterKey
 					sconst_0;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 32;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					return;
 		}
@@ -2258,15 +2498,15 @@
 
 				L0:	aload_0;
 					sconst_1;
-					putfield_b 16;		// boolean employee_card/SecurityManager.isCardLocked
+					putfield_b 20;		// boolean employee_card/SecurityManager.isCardLocked
 					aload_0;
 					sconst_0;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 0;		// javacard/security/AESKey
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 0;		// javacard/security/AESKey
 					aload_0;
 					sconst_0;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					return;
 		}
 
@@ -2276,15 +2516,15 @@
 
 				L0:	aload_0;
 					sconst_0;
-					putfield_b 16;		// boolean employee_card/SecurityManager.isCardLocked
+					putfield_b 20;		// boolean employee_card/SecurityManager.isCardLocked
 					aload_0;
 					sconst_3;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					aload_0;
 					sconst_0;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 0;		// javacard/security/AESKey
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 0;		// javacard/security/AESKey
 					return;
 		}
 
@@ -2292,91 +2532,91 @@
 			.stack 6;
 			.locals 0;
 
-				L0:	getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
-					getstatic_a 125;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
+				L0:	getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
+					getstatic_a 138;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
 					sconst_0;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_1;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 20;		// reference employee_card/SecurityManager.adminWrappedMasterKey
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 24;		// reference employee_card/SecurityManager.adminWrappedMasterKey
 					sconst_0;
 					bspush 16;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					aload_1;
 					sload_2;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					getfield_a_this 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					getfield_a_this 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					sconst_0;
 					bspush 16;
-					invokestatic 77;		// javacard/framework/Util.arrayCompare([BS[BSS)B
+					invokestatic 86;		// javacard/framework/Util.arrayCompare([BS[BSS)B
 					ifne L2;
-				L1:	getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+				L1:	getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 32;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					sspush 27273;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L2:	getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					bspush 16;
-					getfield_a_this 18;		// reference employee_card/SecurityManager.encryptedMasterKey
+					getfield_a_this 22;		// reference employee_card/SecurityManager.encryptedMasterKey
 					sconst_0;
 					bspush 16;
-					invokestatic 95;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
+					invokestatic 118;		// javacard/framework/Util.arrayCopyNonAtomic([BS[BSS)S
 					pop;
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
-					getstatic_a 125;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
+					getstatic_a 138;		// reference employee_card/SecurityManager.ADMIN_STATIC_KEY
 					sconst_0;
-					invokeinterface 3 98 4;		// javacard/security/AESKey
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 22;		// reference employee_card/SecurityManager.wrapKey
+					invokeinterface 3 111 4;		// javacard/security/AESKey
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 26;		// reference employee_card/SecurityManager.wrapKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 24;		// reference employee_card/SecurityManager.keyWrapper
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 28;		// reference employee_card/SecurityManager.keyWrapper
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 16;
-					getfield_a_this 20;		// reference employee_card/SecurityManager.adminWrappedMasterKey
+					getfield_a_this 24;		// reference employee_card/SecurityManager.adminWrappedMasterKey
 					sconst_0;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
-					getfield_a_this 30;		// reference employee_card/SecurityManager.tempBuffer
+					getfield_a_this 34;		// reference employee_card/SecurityManager.tempBuffer
 					sconst_0;
 					bspush 32;
 					sconst_0;
-					invokestatic 89;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
+					invokestatic 103;		// javacard/framework/Util.arrayFillNonAtomic([BSSB)S
 					pop;
 					aload_0;
 					sconst_3;
-					putfield_b 15;		// byte employee_card/SecurityManager.pinTries
+					putfield_b 19;		// byte employee_card/SecurityManager.pinTries
 					aload_0;
 					sconst_0;
-					putfield_b 16;		// boolean employee_card/SecurityManager.isCardLocked
+					putfield_b 20;		// boolean employee_card/SecurityManager.isCardLocked
 					aload_0;
 					sconst_0;
-					putfield_b 14;		// boolean employee_card/SecurityManager.isValidated
+					putfield_b 18;		// boolean employee_card/SecurityManager.isValidated
 					return;
 		}
 
@@ -2384,22 +2624,22 @@
 			.stack 6;
 			.locals 0;
 
-				L0:	getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 3;		// javacard/security/AESKey
+				L0:	getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 3;		// javacard/security/AESKey
 					ifne L2;
 				L1:	sspush 27013;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L2:	getfield_a_this 23;		// reference employee_card/SecurityManager.aesCipher
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 27;		// reference employee_card/SecurityManager.aesCipher
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
 					sconst_2;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 23;		// reference employee_card/SecurityManager.aesCipher
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 27;		// reference employee_card/SecurityManager.aesCipher
 					aload_1;
 					sload_2;
 					sload_3;
 					aload 4;
 					sload 5;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
 					return;
 		}
@@ -2408,22 +2648,22 @@
 			.stack 6;
 			.locals 0;
 
-				L0:	getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
-					invokeinterface 1 98 3;		// javacard/security/AESKey
+				L0:	getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
+					invokeinterface 1 111 3;		// javacard/security/AESKey
 					ifne L2;
 				L1:	sspush 27013;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L2:	getfield_a_this 23;		// reference employee_card/SecurityManager.aesCipher
-					getfield_a_this 21;		// reference employee_card/SecurityManager.transientMasterKey
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 27;		// reference employee_card/SecurityManager.aesCipher
+					getfield_a_this 25;		// reference employee_card/SecurityManager.transientMasterKey
 					sconst_1;
-					invokevirtual 123;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
-					getfield_a_this 23;		// reference employee_card/SecurityManager.aesCipher
+					invokevirtual 136;		// javacardx/crypto/Cipher.init(Ljavacard/security/Key;B)V
+					getfield_a_this 27;		// reference employee_card/SecurityManager.aesCipher
 					aload_1;
 					sload_2;
 					sload_3;
 					aload 4;
 					sload 5;
-					invokevirtual 124;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
+					invokevirtual 137;		// javacardx/crypto/Cipher.doFinal([BSS[BS)S
 					pop;
 					return;
 		}
@@ -2432,17 +2672,17 @@
 			.stack 4;
 			.locals 3;
 
-				L0:	getfield_a_this 28;		// reference employee_card/SecurityManager.publicKey
+				L0:	getfield_a_this 32;		// reference employee_card/SecurityManager.publicKey
 					aload_1;
 					sload_2;
 					sconst_2;
 					sadd;
-					invokeinterface 3 114 5;		// javacard/security/RSAPublicKey
+					invokeinterface 3 127 5;		// javacard/security/RSAPublicKey
 					sstore_3;
 				L1:	aload_1;
 					sload_2;
 					sload_3;
-					invokestatic 126;		// javacard/framework/Util.setShort([BSS)S
+					invokestatic 139;		// javacard/framework/Util.setShort([BSS)S
 					pop;
 					sload_2;
 					sconst_2;
@@ -2450,17 +2690,17 @@
 					sload_3;
 					sadd;
 					sstore 4;
-				L2:	getfield_a_this 28;		// reference employee_card/SecurityManager.publicKey
+				L2:	getfield_a_this 32;		// reference employee_card/SecurityManager.publicKey
 					aload_1;
 					sload 4;
 					sconst_2;
 					sadd;
-					invokeinterface 3 114 4;		// javacard/security/RSAPublicKey
+					invokeinterface 3 127 4;		// javacard/security/RSAPublicKey
 					sstore 5;
 				L3:	aload_1;
 					sload 4;
 					sload 5;
-					invokestatic 126;		// javacard/framework/Util.setShort([BSS)S
+					invokestatic 139;		// javacard/framework/Util.setShort([BSS)S
 					pop;
 					sconst_2;
 					sload_3;
@@ -2476,21 +2716,21 @@
 			.stack 6;
 			.locals 0;
 
-				L0:	getfield_b_this 14;		// boolean employee_card/SecurityManager.isValidated
+				L0:	getfield_b_this 18;		// boolean employee_card/SecurityManager.isValidated
 					ifne L2;
 				L1:	sspush 27010;
-					invokestatic 105;		// javacard/framework/ISOException.throwIt(S)V
-				L2:	getfield_a_this 29;		// reference employee_card/SecurityManager.rsaSignature
-					getfield_a_this 27;		// reference employee_card/SecurityManager.privateKey
+					invokestatic 113;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	getfield_a_this 33;		// reference employee_card/SecurityManager.rsaSignature
+					getfield_a_this 31;		// reference employee_card/SecurityManager.privateKey
 					sconst_1;
-					invokevirtual 127;		// javacard/security/Signature.init(Ljavacard/security/Key;B)V
-					getfield_a_this 29;		// reference employee_card/SecurityManager.rsaSignature
+					invokevirtual 140;		// javacard/security/Signature.init(Ljavacard/security/Key;B)V
+					getfield_a_this 33;		// reference employee_card/SecurityManager.rsaSignature
 					aload_1;
 					sload_2;
 					sload_3;
 					aload 4;
 					sload 5;
-					invokevirtual 128;		// javacard/security/Signature.sign([BSS[BS)S
+					invokevirtual 141;		// javacard/security/Signature.sign([BSS[BS)S
 					sreturn;
 		}
 
