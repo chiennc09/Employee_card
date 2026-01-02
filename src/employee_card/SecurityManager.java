@@ -18,6 +18,7 @@ public class SecurityManager {
     private boolean isPinSet;
     private boolean isCardLocked;
     private byte[] adminWrappedMasterKey;
+    private boolean isAdminValidated = false;
     
     private static final byte[] ADMIN_STATIC_KEY = {
         0x41, 0x44, 0x4D, 0x49, 0x4E, 0x5F, 0x4B, 0x45,
@@ -90,6 +91,7 @@ public class SecurityManager {
 
     public void reset() {
         isValidated = false;
+        isAdminValidated = false;
         transientMasterKey.clearKey();
     }
     
@@ -116,10 +118,10 @@ public class SecurityManager {
     public boolean verifyPin(byte[] inputKey, short off) {
         if (!isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
         
-        //  KIM TRA KH”A ADMIN TR›C (›u tiÍn cao nht)
+        //  KIM TRA KH√ìA ADMIN TR∆ØC (∆Øu ti√™n cao nht)
         if (isCardLocked) ISOException.throwIt((short) 0x6283); 
         
-        // Sau Û mi kim tra pinTries
+        // Sau ƒë√≥ mi kim tra pinTries
         if (pinTries == 0) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
 
         wrapKey.setKey(inputKey, off);
@@ -140,7 +142,7 @@ public class SecurityManager {
             isValidated = false;
             transientMasterKey.clearKey();
             
-            //  T –NG KH”A KHI NHP SAI 3 LN
+            //  T ƒêNG KH√ìA KHI NHP SAI 3 LN
             if (pinTries == 0) {
                 isCardLocked = true; 
                 ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
@@ -168,7 +170,7 @@ public class SecurityManager {
         Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)32, (byte)0);
     }
 
-    //  Admin khÛa th - HOT –NG TRC TIP
+    //  Admin kh√≥a th - HOT ƒêNG TRC TIP
     public void lockCard() {
         isCardLocked = true;
         isValidated = false;
@@ -176,7 +178,7 @@ public class SecurityManager {
         pinTries = 0; 
     }
 
-    //  Admin m khÛa th - HOT –NG TRC TIP
+    //  Admin m kh√≥a th - HOT ƒêNG TRC TIP
     public void unlockCard() {
         isCardLocked = false;
         pinTries = MAX_RETRY;
@@ -207,7 +209,7 @@ public class SecurityManager {
         Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)32, (byte)0);
         pinTries = MAX_RETRY;
         isCardLocked = false;
-        // Reset xong khÙng t ng validate, User vn phi verifyPin bng m mi
+        // Reset xong kh√¥ng t ƒëng validate, User vn phi verifyPin bng m mi
         isValidated = false; 
     }
 
@@ -237,4 +239,25 @@ public class SecurityManager {
         rsaSignature.init(privateKey, Signature.MODE_SIGN);
         return rsaSignature.sign(input, inputOff, inputLen, sigBuff, sigOff);
     }
+    // Th√™m h√†m x√°c thc Admin mi
+	public void verifyAdmin(byte[] inputKey, short off) {
+		// So s√°nh key gi l√™n vi ADMIN_STATIC_KEY (ADMIN_KEY_2025...)
+		if (Util.arrayCompare(inputKey, off, ADMIN_STATIC_KEY, (short) 0, (short) 16) == 0) {
+			isAdminValidated = true;
+			
+			// QUAN TRNG: Admin cng cn np MasterKey ƒë c√≥ quyn Encrypt d liu khi Update Info
+			// D√πng c∆° ch Unwrapping ging nh∆∞ l√∫c Reset PIN
+			wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+			keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
+			keyWrapper.doFinal(adminWrappedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0);
+			transientMasterKey.setKey(tempBuffer, (short) 0);
+		} else {
+			isAdminValidated = false;
+			ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+		}
+	}
+
+	public boolean isAdminValidated() {
+		return isAdminValidated;
+	}
 }
