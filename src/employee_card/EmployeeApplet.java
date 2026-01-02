@@ -343,9 +343,9 @@ public class EmployeeApplet extends Applet {
 		boolean isAdmin = security.isAdminValidated();
 		boolean isInitialized = repository.isIdSet();
 
-		// 1. KIM TRA QUYN GHI ÄĂˆ (Ch check nu th Ä‘ cĂ³ d liu)
+		// 1. KIM TRA QUYN GHI ĐÈ (Ch check nu th đ có d liu)
 		if (isInitialized && !isAdmin) {
-			// User bnh thÆ°ng khĂ´ng Ä‘Æ°c Ä‘i ID
+			// User bnh thưng không đưc đi ID
 			security.encryptData(buf, ISO7816.OFFSET_CDATA, CardRepository.LEN_ID, tempCompBuffer, (short)0);
 			if (Util.arrayCompare(tempCompBuffer, (short)0, repository.getEncryptedId(), (short)0, CardRepository.LEN_ID) != 0) {
 				ISOException.throwIt(SW_EMP_ID_LOCKED); // 69 85
@@ -355,14 +355,14 @@ public class EmployeeApplet extends Applet {
 		// 2. GHI D LIU
 		short currentOff = ISO7816.OFFSET_CDATA;
 
-		// Ghi ID: Cho phĂ©p nu th chÆ°a khi to HOC lĂ  Admin
+		// Ghi ID: Cho phép nu th chưa khi to HOC là Admin
 		if (!isInitialized || isAdmin) {
 			security.encryptData(buf, currentOff, CardRepository.LEN_ID, tempCompBuffer, (short)0);
 			repository.setEncryptedId(tempCompBuffer, (short)0);
 		}
 		currentOff += CardRepository.LEN_ID;
 
-		// Ghi TĂªn & NgĂ y sinh (LuĂ´n cho phĂ©p khi Ä‘ qua bÆ°c bo mt chung)
+		// Ghi Tên & Ngày sinh (Luôn cho phép khi đ qua bưc bo mt chung)
 		security.encryptData(buf, currentOff, CardRepository.LEN_NAME, tempCompBuffer, (short)0);
 		repository.setEncryptedName(tempCompBuffer, (short)0);
 		currentOff += CardRepository.LEN_NAME;
@@ -371,8 +371,8 @@ public class EmployeeApplet extends Applet {
 		repository.setEncryptedDob(tempCompBuffer, (short)0);
 		currentOff += CardRepository.LEN_DOB;
 
-		// Ghi Phng ban & Chc v: CH Admin mi Ä‘Æ°c ghi (HOC cho phĂ©p ghi nu lĂ  cp th ln Ä‘u)
-		if (isAdmin || !isInitialized) { // ThĂªm Ä‘iu kin !isInitialized
+		// Ghi Phng ban & Chc v: CH Admin mi đưc ghi (HOC cho phép ghi nu là cp th ln đu)
+		if (isAdmin || !isInitialized) { // Thêm điu kin !isInitialized
 			security.encryptData(buf, currentOff, CardRepository.LEN_DEPT, tempCompBuffer, (short)0);
 			repository.setEncryptedDept(tempCompBuffer, (short)0);
 			currentOff += CardRepository.LEN_DEPT;
@@ -443,16 +443,9 @@ public class EmployeeApplet extends Applet {
         
         // [ID (16)] [Amount (4)] [Time (4)] [UN (4)]
         short off = 0;
-<<<<<<< HEAD
         
         // Decrypt ID -> tempCompBuffer
         security.decryptData(repository.getEncryptedId(), (short)0, CardRepository.LEN_ID, tempCompBuffer, (short)0);
-=======
-        byte[] encInfo = repository.getEmpInfoBuffer();
-        
-        // Decrypt 16 byte (ID) vào tempCompBuffer toi offset 0
-        security.decryptData(encInfo, (short)0, (short)16, tempCompBuffer, (short)0); 
->>>>>>> b579651219a4f3fcbd3dcf88223b7cd8e0124544
         off += 16;
         
         // Copy Amount (4 bytes)
