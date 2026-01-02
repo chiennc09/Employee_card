@@ -11,6 +11,7 @@ public class EmployeeApplet extends Applet {
     private static final byte INS_AUTHENTICATE   = (byte) 0x26; 
     private static final byte INS_GET_PUB_KEY    = (byte) 0x27;
     private static final byte INS_GET_SALT       = (byte) 0x28;
+    private static final byte INS_GET_CHALLENGE  = (byte) 0x2F;
 
     private static final byte INS_SETUP_PIN      = (byte) 0x29;
     private static final byte INS_CHECK_SETUP    = (byte) 0x2A;
@@ -118,6 +119,11 @@ public class EmployeeApplet extends Applet {
                 apdu.setOutgoingAndSend((short) 0, (short) 16);
                 return;
                 
+            case INS_GET_CHALLENGE:
+				security.generateChallenge(buf, (short) 0);
+				apdu.setOutgoingAndSend((short) 0, (short) 16);
+				return;
+                
             case INS_VERIFY_PIN: 
                 handleVerifyPin(apdu); 
                 return;
@@ -212,9 +218,9 @@ public class EmployeeApplet extends Applet {
         
         // Host gui Argon2 (16 bytes)
 
-        if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        if (len != 128) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         
-        if (!security.verifyPin(buf, ISO7816.OFFSET_CDATA)) {
+        if (!security.verifyPin(buf, ISO7816.OFFSET_CDATA, len)) {
             // pinTries == 0 => 62 83
             if (security.isCardLocked()) {
                 ISOException.throwIt(SW_CARD_LOCKED);
@@ -339,7 +345,7 @@ public class EmployeeApplet extends Applet {
         // Check ID
         if (repository.isIdSet()) {
             // enc ID tu host
-            security.encryptData(buf, (short)0, CardRepository.LEN_ID, tempCompBuffer, (short)0);
+            security.encryptData(buf, ISO7816.OFFSET_CDATA, CardRepository.LEN_ID, tempCompBuffer, (short)0);
             
             // Compare vs encID
             if (Util.arrayCompare(tempCompBuffer, (short)0, repository.getEncryptedId(), (short)0, CardRepository.LEN_ID) != 0) {

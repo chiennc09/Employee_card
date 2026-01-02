@@ -7,7 +7,7 @@
 <FileNodes>
 <fnode>
 <fileName>src\employee_card\SecurityManager.java</fileName>
-<line>14</line>
+<line>173</line>
 </fnode>
 <fnode>
 <fileName>src\employee_card\CardRepository.java</fileName>
@@ -15,11 +15,11 @@
 </fnode>
 <fnode>
 <fileName>src\employee_card\EmployeeApplet.java</fileName>
-<line>349</line>
+<line>342</line>
 </fnode>
 <ActiveFile>
 <fileName>src\employee_card\Avatar.java</fileName>
-<line>40</line>
+<line>7</line>
 </ActiveFile>
 </FileNodes>
 </StateInfo>

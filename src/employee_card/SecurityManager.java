@@ -42,6 +42,9 @@ public class SecurityManager {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
     private Signature rsaSignature;
+    private byte[] currentNonce; // Lu Nonce hin ti
+    private RandomData randomData;
+    private Cipher rsaCipher;
 
     public SecurityManager() {
         isPinSet = false;
@@ -72,6 +75,9 @@ public class SecurityManager {
             privateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
             publicKey = (RSAPublicKey) rsaKeyPair.getPublic();
             rsaSignature = Signature.getInstance(Signature.ALG_RSA_SHA_PKCS1, false);
+            currentNonce = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
+			randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+			rsaCipher = Cipher.getInstance(Cipher.ALG_RSA_PKCS1, false);
             
             tempBuffer = JCSystem.makeTransientByteArray((short) 64, JCSystem.CLEAR_ON_DESELECT);
             
@@ -90,6 +96,13 @@ public class SecurityManager {
 
     public void getSalt(byte[] dest, short off) {
         Util.arrayCopyNonAtomic(salt, (short) 0, dest, off, (short) 16);
+    }
+    
+    public void generateChallenge(byte[] dest, short off) {
+        // Sinh 16 byte
+        randomData.generateData(currentNonce, (short) 0, (short) 16);
+        // Copy ra buffer
+        Util.arrayCopyNonAtomic(currentNonce, (short) 0, dest, off, (short) 16);
     }
     
     public boolean isPinSet() { return isPinSet; }
@@ -137,7 +150,7 @@ public class SecurityManager {
     }
 
     // --- VERIFY PIN ---
-    public boolean verifyPin(byte[] inputKey, short off) {
+    public boolean verifyPin(byte[] encryptedBlob, short off, short len) {
         if (!isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
         
         // KIEM TRA KHÓA ADMIN TRÝC (Ýu tiên cao nht)
@@ -146,8 +159,23 @@ public class SecurityManager {
         // Sau ðó kiem tra pinTries
         if (pinTries == 0) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
 
+		// RSA
+        rsaCipher.init(privateKey, Cipher.MODE_DECRYPT);
+        // tempBuffer: [NONCE (16 bytes) | pinHash (16 bytes)]
+        short plainLen = rsaCipher.doFinal(encryptedBlob, off, len, tempBuffer, (short) 0);
+
+        if (plainLen < 32) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+
+        // So sanh Nonce tempBuffer[0..15]) vs Nonce trong RAM (currentNonce)
+        if (Util.arrayCompare(tempBuffer, (short) 0, currentNonce, (short) 0, (short) 16) != 0) {
+            resetNonce(); 
+            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED); 
+        }
+
+        resetNonce();
+
 		// 1. Set Key dan xuat
-        wrapKey.setKey(inputKey, off);
+        wrapKey.setKey(tempBuffer, (short) 16);
         
         // 2. Giai ma Encrypted Blob trong EEPROM -> Ra Key tam
         keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
@@ -180,6 +208,10 @@ public class SecurityManager {
             Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)64, (byte)0);
             return false;
         }
+    }
+    
+    private void resetNonce() {
+        Util.arrayFillNonAtomic(currentNonce, (short) 0, (short) 16, (byte) 0);
     }
 
     public void changePin(byte[] newKey, short off) {
