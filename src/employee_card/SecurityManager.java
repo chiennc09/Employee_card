@@ -18,11 +18,8 @@ public class SecurityManager {
     private boolean isPinSet;
     private boolean isCardLocked;
     private byte[] adminWrappedMasterKey;
-    
-    private static final byte[] ADMIN_STATIC_KEY = {
-        0x41, 0x44, 0x4D, 0x49, 0x4E, 0x5F, 0x4B, 0x45,
-        0x59, 0x5F, 0x32, 0x30, 0x32, 0x35, 0x00, 0x00
-    };
+    private byte[] adminStaticKey;
+    private boolean isAdminKeySet;
 
     // Crypto
     private AESKey transientMasterKey; // Key nam tren RAM
@@ -33,7 +30,7 @@ public class SecurityManager {
 
     // Du lieu luu trong EEPROM
     private byte[] salt;
-    private byte[] encryptedMasterKey; // Khoa chu da ma hoa (Blob)
+    private byte[] encryptedMasterKey;
     private byte[] masterKeyHash;
     private byte[] tempBuffer;
     
@@ -42,7 +39,7 @@ public class SecurityManager {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
     private Signature rsaSignature;
-    private byte[] currentNonce; // Lu Nonce hin ti
+    private byte[] currentNonce;
     private RandomData randomData;
     private Cipher rsaCipher;
 
@@ -51,6 +48,8 @@ public class SecurityManager {
         isValidated = false;
         pinTries = MAX_RETRY;
         isCardLocked = false;
+		adminStaticKey = new byte[16];
+        isAdminKeySet = false;
         
         salt = new byte[16];
         encryptedMasterKey = new byte[AES_BLOCK_LEN];
@@ -136,7 +135,7 @@ public class SecurityManager {
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, encryptedMasterKey, (short) 0);
         
         // key admin
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, adminWrappedMasterKey, (short) 0);
         
@@ -153,10 +152,9 @@ public class SecurityManager {
     public boolean verifyPin(byte[] encryptedBlob, short off, short len) {
         if (!isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
         
-        // KIEM TRA KHÓA ADMIN TRÝC (Ýu tiên cao nht)
+        // KIEM TRA KHÓA ADMIN
         if (isCardLocked) ISOException.throwIt((short) 0x6283); 
         
-        // Sau ðó kiem tra pinTries
         if (pinTries == 0) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
 
 		// RSA
@@ -235,7 +233,7 @@ public class SecurityManager {
         Util.arrayCopyNonAtomic(tempBuffer, (short) 16, encryptedMasterKey, (short) 0, (short) 16);
         
         //set key admin
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, adminWrappedMasterKey, (short) 0);
         Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)32, (byte)0);
@@ -256,7 +254,7 @@ public class SecurityManager {
     }
 
     public void resetPin(byte[] newKeyBuffer, short off) {
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
         keyWrapper.doFinal(adminWrappedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0); 
 
@@ -270,7 +268,7 @@ public class SecurityManager {
         }
 
         Util.arrayCopyNonAtomic(tempBuffer, (short) 16, encryptedMasterKey, (short) 0, (short) 16);
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, adminWrappedMasterKey, (short) 0);
 
@@ -311,5 +309,25 @@ public class SecurityManager {
         if (!isValidated) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
         rsaSignature.init(privateKey, Signature.MODE_SIGN);
         return rsaSignature.sign(input, inputOff, inputLen, sigBuff, sigOff);
+    }
+    
+    public void injectAdminKeyWithRSA(byte[] buf, short off, short len) {
+        // 1. Check
+        if (isAdminKeySet) ISOException.throwIt(ISO7816.SW_COMMAND_NOT_ALLOWED);
+
+        if (len != 128) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+
+        // 3. Gii mã d liu nhn c bng Private Key lu trong th
+        rsaCipher.init(privateKey, Cipher.MODE_DECRYPT);
+        short plainLen = rsaCipher.doFinal(buf, off, len, adminStaticKey, (short) 0);
+
+        // 4. Kim tra xem kt qu gii mã có úng 16 byte ( dài AES Key) không
+        if (plainLen != 16) {
+            Util.arrayFillNonAtomic(adminStaticKey, (short)0, (short)16, (byte)0);
+            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
+        }
+        
+        // 5. Cht khóa
+        isAdminKeySet = true;
     }
 }

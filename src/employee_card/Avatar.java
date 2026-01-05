@@ -9,7 +9,7 @@ public class Avatar {
     private short maxSize;
 
     public Avatar(short sizeLimit) {
-        // Cp phát 8192 bytes ngay lp tc (Pre-allocation)
+        // Cap phát 8192 bytes ngay lp tc (Pre-allocation)
         this.maxSize = sizeLimit;
         this.data = new byte[maxSize];
         this.size = 0;
@@ -21,10 +21,10 @@ public class Avatar {
             ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         }
         
-        // Copy d liu vào mng
+        // Copy du lieu vào mang
         Util.arrayCopyNonAtomic(buffer, bufOffset, data, chunkOffset, chunkLength);
         
-        // Cp nht kích thc thc t
+        // Cap nhat kích thuoc thuc te
         short newEnd = (short) (chunkOffset + chunkLength);
         if (newEnd > size) {
             size = newEnd;

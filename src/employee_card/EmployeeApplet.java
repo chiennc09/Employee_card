@@ -21,6 +21,7 @@ public class EmployeeApplet extends Applet {
     private static final byte INS_UNLOCK_CARD    = (byte) 0x2C;
     private static final byte INS_RESET_PIN      = (byte) 0x2D;
     private static final byte INS_CHECK_LOCKED   = (byte) 0x2E;
+    private static final byte INS_INJECT_ADMIN_KEY = (byte) 0x20;
 
     private static final byte INS_READ_INFO      = (byte) 0x30;
     private static final byte INS_UPDATE_INFO    = (byte) 0x31;
@@ -77,8 +78,6 @@ public class EmployeeApplet extends Applet {
         byte[] buf = apdu.getBuffer();
         byte ins = buf[ISO7816.OFFSET_INS];
 
-        // --- BÝC 1: LC CÁC LNH QUN TR (LUÔN CHO PHÉP CHY) ---
-        // Admin cn các lnh này ð cu th hoc kim tra trng thái
         if (ins == INS_UNLOCK_CARD || ins == INS_CHECK_LOCKED || ins == INS_RESET_PIN || ins == INS_LOCK_CARD) {
             switch (ins) {
                 case INS_CHECK_LOCKED:
@@ -97,13 +96,11 @@ public class EmployeeApplet extends Applet {
             }
         }
 
-        // --- BÝC 2: CHT CHN BO MT (QUAN TRNG NHT) ---
-        // Nu th ðang b khóa, chn TT C các lnh cn li ca User
+
         if (security.isCardLocked()) {
             ISOException.throwIt(SW_CARD_LOCKED); // Phn hi li 62 83
         }
 
-        // --- BÝC 3: CÁC LNH BNH THÝNG CA USER ---
         switch (ins) {
             case INS_CHECK_SETUP:
                 buf[0] = security.isPinSet() ? (byte) 1 : (byte) 0;
@@ -194,6 +191,10 @@ public class EmployeeApplet extends Applet {
                 buf[0] = (byte) p; 
                 apdu.setOutgoingAndSend((short)0, (short)1); 
                 return;
+                
+            case INS_INJECT_ADMIN_KEY:
+				handleInjectAdminKey(apdu);
+				break;
 
             default: 
                 ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
@@ -215,8 +216,6 @@ public class EmployeeApplet extends Applet {
     private void handleVerifyPin(APDU apdu) {
         byte[] buf = apdu.getBuffer();
         short len = apdu.setIncomingAndReceive();
-        
-        // Host gui Argon2 (16 bytes)
 
         if (len != 128) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         
@@ -484,4 +483,11 @@ public class EmployeeApplet extends Applet {
         security.decryptData(apdu.getBuffer(), (short)0, total, apdu.getBuffer(), (short)0); 
         apdu.setOutgoingAndSend((short)0, total);
     }
+    
+    private void handleInjectAdminKey(APDU apdu) {
+		byte[] buf = apdu.getBuffer();
+		short len = apdu.setIncomingAndReceive();
+		
+		security.injectAdminKeyWithRSA(buf, ISO7816.OFFSET_CDATA, len);
+	}
 }
