@@ -11,6 +11,7 @@ public class EmployeeApplet extends Applet {
     private static final byte INS_AUTHENTICATE   = (byte) 0x26; 
     private static final byte INS_GET_PUB_KEY    = (byte) 0x27;
     private static final byte INS_GET_SALT       = (byte) 0x28;
+    private static final byte INS_GET_CHALLENGE  = (byte) 0x2F;
 
     private static final byte INS_SETUP_PIN      = (byte) 0x29;
     private static final byte INS_CHECK_SETUP    = (byte) 0x2A;
@@ -20,18 +21,18 @@ public class EmployeeApplet extends Applet {
     private static final byte INS_UNLOCK_CARD    = (byte) 0x2C;
     private static final byte INS_RESET_PIN      = (byte) 0x2D;
     private static final byte INS_CHECK_LOCKED   = (byte) 0x2E;
-    private static final byte INS_VERIFY_ADMIN   = (byte) 0x2F;
+    private static final byte INS_INJECT_ADMIN_KEY = (byte) 0x20;
 
     private static final byte INS_READ_INFO      = (byte) 0x30;
     private static final byte INS_UPDATE_INFO    = (byte) 0x31;
-    private static final byte INS_ADD_ACCESS_LOG = (byte) 0x40;
-    private static final byte INS_READ_LOGS      = (byte) 0x41;
+    // private static final byte INS_ADD_ACCESS_LOG = (byte) 0x40;
+    // private static final byte INS_READ_LOGS      = (byte) 0x41;
     
     private static final byte INS_WALLET_TOPUP   = (byte) 0x50;
     private static final byte INS_WALLET_PAY     = (byte) 0x51;
     private static final byte INS_GET_BALANCE    = (byte) 0x52;
-    private static final byte INS_ADD_POINT      = (byte) 0x53;
-    private static final byte INS_GET_POINT      = (byte) 0x54;
+    // private static final byte INS_ADD_POINT      = (byte) 0x53;
+    // private static final byte INS_GET_POINT      = (byte) 0x54;
     
     private static final byte INS_UPDATE_AVATAR   = (byte) 0x10;
     private static final byte INS_DOWNLOAD_AVATAR = (byte) 0x11;
@@ -40,7 +41,6 @@ public class EmployeeApplet extends Applet {
     private static final short SW_EMP_ID_LOCKED  = (short) 0x6985;
     private static final short SW_AUTH_FAILED = (short) 0x6300;
     private static final short SW_CARD_LOCKED = (short) 0x6283; // M li th b kha
-
 
     private CardRepository repository;
     private SecurityManager security;
@@ -120,6 +120,11 @@ public class EmployeeApplet extends Applet {
                 apdu.setOutgoingAndSend((short) 0, (short) 16);
                 return;
                 
+            case INS_GET_CHALLENGE:
+				security.generateChallenge(buf, (short) 0);
+				apdu.setOutgoingAndSend((short) 0, (short) 16);
+				return;
+                
             case INS_VERIFY_PIN: 
                 handleVerifyPin(apdu); 
                 return;
@@ -154,18 +159,18 @@ public class EmployeeApplet extends Applet {
                 return;
 
             case INS_UPDATE_INFO:
-                if (!security.isValidated()&& !security.isAdminValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+                if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
                 handleUpdateInfo(apdu);
                 return;
 
-            case INS_ADD_ACCESS_LOG: 
-                handleAddLog(apdu); 
-                return;
+            // case INS_ADD_ACCESS_LOG: 
+                // handleAddLog(apdu); 
+                // return;
                 
-            case INS_READ_LOGS:
-                if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-                handleReadLogs(apdu);
-                return;
+            // case INS_READ_LOGS:
+                // if (!security.isValidated()) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
+                // handleReadLogs(apdu);
+                // return;
 
             case INS_WALLET_TOPUP: 
                 handleTopUp(apdu); 
@@ -181,26 +186,31 @@ public class EmployeeApplet extends Applet {
                 handleGetBalance(apdu); 
                 return;
                 
-            case INS_ADD_POINT: 
-                repository.addPoint(buf[ISO7816.OFFSET_P1]); 
-                return;
+            // case INS_ADD_POINT: 
+                // repository.addPoint(buf[ISO7816.OFFSET_P1]); 
+                // return;
                 
-            case INS_GET_POINT: 
-                short p = repository.getPoints(); 
-                buf[0] = (byte) p; 
-                apdu.setOutgoingAndSend((short)0, (short)1); 
-                return;
-			case INS_VERIFY_ADMIN:
-				short lenAdmin = apdu.setIncomingAndReceive();
-				if (lenAdmin < 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
-				security.verifyAdmin(buf, ISO7816.OFFSET_CDATA);
-				return;
-				
+            // case INS_GET_POINT: 
+                // short p = repository.getPoints(); 
+                // buf[0] = (byte) p; 
+                // apdu.setOutgoingAndSend((short)0, (short)1); 
+                // return;
+            case INS_INJECT_ADMIN_KEY:
+				handleInjectAdminKey(apdu);
+				break;
+
             default: 
                 ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
         }
     }
-
+	// Cập nhật hàm handle
+	private void handleInjectAdminKey(APDU apdu) {
+		byte[] buf = apdu.getBuffer();
+		short len = apdu.setIncomingAndReceive();
+		
+		// Gọi hàm giải mã RSA từ SecurityManager
+		security.injectAdminKeyWithRSA(buf, ISO7816.OFFSET_CDATA, len);
+	}
     // -------------------------------------------------------------
     
     private void handleSetupPin(APDU apdu) {
@@ -219,9 +229,9 @@ public class EmployeeApplet extends Applet {
         
         // Host gui Argon2 (16 bytes)
 
-        if (len != 16) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        if (len != 128) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
         
-        if (!security.verifyPin(buf, ISO7816.OFFSET_CDATA)) {
+        if (!security.verifyPin(buf, ISO7816.OFFSET_CDATA, len)) {
             // pinTries == 0 => 62 83
             if (security.isCardLocked()) {
                 ISOException.throwIt(SW_CARD_LOCKED);
@@ -336,51 +346,51 @@ public class EmployeeApplet extends Applet {
     }
     
     private void handleUpdateInfo(APDU apdu) {
-		byte[] buf = apdu.getBuffer();
-		short len = apdu.setIncomingAndReceive();
-		if (len != CardRepository.TOTAL_INFO_SIZE) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+        byte[] buf = apdu.getBuffer();
+        short len = apdu.setIncomingAndReceive();
+        
+        // Check len
+        if (len != CardRepository.TOTAL_INFO_SIZE) 
+            ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
 
-		boolean isAdmin = security.isAdminValidated();
-		boolean isInitialized = repository.isIdSet();
+        // Check ID
+        if (repository.isIdSet()) {
+            // enc ID tu host
+            security.encryptData(buf, ISO7816.OFFSET_CDATA, CardRepository.LEN_ID, tempCompBuffer, (short)0);
+            
+            // Compare vs encID
+            if (Util.arrayCompare(tempCompBuffer, (short)0, repository.getEncryptedId(), (short)0, CardRepository.LEN_ID) != 0) {
+                ISOException.throwIt(SW_EMP_ID_LOCKED);
+            }
+        }
 
-		// 1. KIM TRA QUYN GHI ĐÈ (Ch check nu th đ có d liu)
-		if (isInitialized && !isAdmin) {
-			// User bnh thưng không đưc đi ID
-			security.encryptData(buf, ISO7816.OFFSET_CDATA, CardRepository.LEN_ID, tempCompBuffer, (short)0);
-			if (Util.arrayCompare(tempCompBuffer, (short)0, repository.getEncryptedId(), (short)0, CardRepository.LEN_ID) != 0) {
-				ISOException.throwIt(SW_EMP_ID_LOCKED); // 69 85
-			}
-		}
+        short currentOff = ISO7816.OFFSET_CDATA;
 
-		// 2. GHI D LIU
-		short currentOff = ISO7816.OFFSET_CDATA;
+        // 1. Process ID
+        security.encryptData(buf, currentOff, CardRepository.LEN_ID, tempCompBuffer, (short)0);
+        repository.setEncryptedId(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_ID;
 
-		// Ghi ID: Cho phép nu th chưa khi to HOC là Admin
-		if (!isInitialized || isAdmin) {
-			security.encryptData(buf, currentOff, CardRepository.LEN_ID, tempCompBuffer, (short)0);
-			repository.setEncryptedId(tempCompBuffer, (short)0);
-		}
-		currentOff += CardRepository.LEN_ID;
+        // 2. Process Name
+        security.encryptData(buf, currentOff, CardRepository.LEN_NAME, tempCompBuffer, (short)0);
+        repository.setEncryptedName(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_NAME;
 
-		// Ghi Tên & Ngày sinh (Luôn cho phép khi đ qua bưc bo mt chung)
-		security.encryptData(buf, currentOff, CardRepository.LEN_NAME, tempCompBuffer, (short)0);
-		repository.setEncryptedName(tempCompBuffer, (short)0);
-		currentOff += CardRepository.LEN_NAME;
+        // 3. Process DOB
+        security.encryptData(buf, currentOff, CardRepository.LEN_DOB, tempCompBuffer, (short)0);
+        repository.setEncryptedDob(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_DOB;
 
-		security.encryptData(buf, currentOff, CardRepository.LEN_DOB, tempCompBuffer, (short)0);
-		repository.setEncryptedDob(tempCompBuffer, (short)0);
-		currentOff += CardRepository.LEN_DOB;
+        // 4. Process Dept
+        security.encryptData(buf, currentOff, CardRepository.LEN_DEPT, tempCompBuffer, (short)0);
+        repository.setEncryptedDept(tempCompBuffer, (short)0);
+        currentOff += CardRepository.LEN_DEPT;
 
-		// Ghi Phng ban & Chc v: CH Admin mi đưc ghi (HOC cho phép ghi nu là cp th ln đu)
-		if (isAdmin || !isInitialized) { // Thêm điu kin !isInitialized
-			security.encryptData(buf, currentOff, CardRepository.LEN_DEPT, tempCompBuffer, (short)0);
-			repository.setEncryptedDept(tempCompBuffer, (short)0);
-			currentOff += CardRepository.LEN_DEPT;
+        // 5. Process Pos
+        security.encryptData(buf, currentOff, CardRepository.LEN_POS, tempCompBuffer, (short)0);
+        repository.setEncryptedPos(tempCompBuffer, (short)0);
+    }
 
-			security.encryptData(buf, currentOff, CardRepository.LEN_POS, tempCompBuffer, (short)0);
-			repository.setEncryptedPos(tempCompBuffer, (short)0);
-		}
-	}
     private void handleGetBalance(APDU apdu) {
         byte[] buf = apdu.getBuffer(); 
         byte[] encryptedBal = repository.getBalanceBuffer();
