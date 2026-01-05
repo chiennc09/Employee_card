@@ -9,7 +9,7 @@ public class SecurityManager {
     // Config
     private static final byte MAX_RETRY = 3;
     private static final byte AES_BLOCK_LEN = 16;
-    private static final byte HASH_LEN = 20; // SHA-1 cho Java Card 2.2.1
+    private static final byte HASH_LEN = 20;
 
     private static final short SW_PIN_IDENTICAL = (short) 0x6A89; 
 
@@ -18,23 +18,24 @@ public class SecurityManager {
     private boolean isPinSet;
     private boolean isCardLocked;
     private byte[] adminWrappedMasterKey;
-    private boolean isAdminValidated = false;
+    private byte[] adminStaticKey;
+    private boolean isAdminKeySet;
     
-    private static final byte[] ADMIN_STATIC_KEY = {
-        0x41, 0x44, 0x4D, 0x49, 0x4E, 0x5F, 0x4B, 0x45,
-        0x59, 0x5F, 0x32, 0x30, 0x32, 0x35, 0x00, 0x00
-    };
+    // private static final byte[] ADMIN_STATIC_KEY = {
+        // 0x41, 0x44, 0x4D, 0x49, 0x4E, 0x5F, 0x4B, 0x45,
+        // 0x59, 0x5F, 0x32, 0x30, 0x32, 0x35, 0x00, 0x00
+    // };
 
     // Crypto
-    private AESKey transientMasterKey;
-    private AESKey wrapKey;
-    private Cipher aesCipher;
-    private Cipher keyWrapper;
+    private AESKey transientMasterKey; // Key nam tren RAM
+    private AESKey wrapKey;            // Key dan xuat
+    private Cipher aesCipher;          // Dung cho data encryption
+    private Cipher keyWrapper;         // Dung cho key wrapping
     private MessageDigest sha1;
 
-    // D liu EEPROM
+    // Du lieu luu trong EEPROM
     private byte[] salt;
-    private byte[] encryptedMasterKey;
+    private byte[] encryptedMasterKey; // Khoa chu da ma hoa (Blob)
     private byte[] masterKeyHash;
     private byte[] tempBuffer;
     
@@ -43,32 +44,48 @@ public class SecurityManager {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
     private Signature rsaSignature;
+    private byte[] currentNonce; // Lu Nonce hin ti
+    private RandomData randomData;
+    private Cipher rsaCipher;
 
     public SecurityManager() {
         isPinSet = false;
         isValidated = false;
         pinTries = MAX_RETRY;
         isCardLocked = false;
+        adminStaticKey = new byte[16];
+        isAdminKeySet = false;
         
         salt = new byte[16];
         encryptedMasterKey = new byte[AES_BLOCK_LEN];
         masterKeyHash = new byte[HASH_LEN];
         adminWrappedMasterKey = new byte[AES_BLOCK_LEN];
-
+		// Khoi tao
         try {
+        	// AES Key object
             transientMasterKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
             wrapKey = (AESKey) KeyBuilder.buildKey(KeyBuilder.TYPE_AES, KeyBuilder.LENGTH_AES_128, false);
+            
+            // Ciphers
             aesCipher = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
             keyWrapper = Cipher.getInstance(Cipher.ALG_AES_BLOCK_128_ECB_NOPAD, false);
+            
+            // Hash
             sha1 = MessageDigest.getInstance(MessageDigest.ALG_SHA, false);
             
+            // RSA 
             rsaKeyPair = new KeyPair(KeyPair.ALG_RSA, KeyBuilder.LENGTH_RSA_1024);
             rsaKeyPair.genKeyPair();
             privateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
             publicKey = (RSAPublicKey) rsaKeyPair.getPublic();
             rsaSignature = Signature.getInstance(Signature.ALG_RSA_SHA_PKCS1, false);
+            currentNonce = JCSystem.makeTransientByteArray((short) 16, JCSystem.CLEAR_ON_DESELECT);
+			randomData = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+			rsaCipher = Cipher.getInstance(Cipher.ALG_RSA_PKCS1, false);
             
             tempBuffer = JCSystem.makeTransientByteArray((short) 64, JCSystem.CLEAR_ON_DESELECT);
+            
+            // SETUP
             initSecureData();
         } catch (CryptoException e) {
             ISOException.throwIt(ISO7816.SW_FUNC_NOT_SUPPORTED);
@@ -77,11 +94,19 @@ public class SecurityManager {
 
     private void initSecureData() {
         RandomData rng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
+        // Sinh salt
         rng.generateData(salt, (short) 0, (short) 16);
     }
 
     public void getSalt(byte[] dest, short off) {
         Util.arrayCopyNonAtomic(salt, (short) 0, dest, off, (short) 16);
+    }
+    
+    public void generateChallenge(byte[] dest, short off) {
+        // Sinh 16 byte
+        randomData.generateData(currentNonce, (short) 0, (short) 16);
+        // Copy ra buffer
+        Util.arrayCopyNonAtomic(currentNonce, (short) 0, dest, off, (short) 16);
     }
     
     public boolean isPinSet() { return isPinSet; }
@@ -91,23 +116,37 @@ public class SecurityManager {
 
     public void reset() {
         isValidated = false;
-        isAdminValidated = false;
         transientMasterKey.clearKey();
     }
     
     public void setupFirstPin(byte[] keyBuffer, short off) {
         if (isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
+        
+        // Sinh  Master Key 16 bytes
         RandomData rng = RandomData.getInstance(RandomData.ALG_SECURE_RANDOM);
         rng.generateData(tempBuffer, (short) 0, (short) 16); 
+        
+        // Tinh Hash Master Key => EEPROM (verify pin)
         sha1.doFinal(tempBuffer, (short) 0, (short) 16, masterKeyHash, (short) 0);
+        
+        // Load Master Key vao RAM => sd ma hoa
         transientMasterKey.setKey(tempBuffer, (short) 0);
+        
+        // Set Key Argon2 
         wrapKey.setKey(keyBuffer, off);
+        
+        // Ma hoa Master Key (tempBuffer) -> Luu vao Blob EEPROM
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, encryptedMasterKey, (short) 0);
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        
+        // key admin
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, adminWrappedMasterKey, (short) 0);
+        
+        // Xoa temp
         Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)16, (byte)0);
+        
         isPinSet = true;
         isValidated = true;
         isCardLocked = false;
@@ -115,24 +154,48 @@ public class SecurityManager {
     }
 
     // --- VERIFY PIN ---
-    public boolean verifyPin(byte[] inputKey, short off) {
+    public boolean verifyPin(byte[] encryptedBlob, short off, short len) {
         if (!isPinSet) ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
         
-        //  KIM TRA KHÓA ADMIN TRƯC (Ưu tiên cao nht)
+        // KIEM TRA KHA ADMIN TRC (u tin cao nht)
         if (isCardLocked) ISOException.throwIt((short) 0x6283); 
         
-        // Sau đó mi kim tra pinTries
+        // Sau  kiem tra pinTries
         if (pinTries == 0) ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
 
-        wrapKey.setKey(inputKey, off);
+		// RSA
+        rsaCipher.init(privateKey, Cipher.MODE_DECRYPT);
+        // tempBuffer: [NONCE (16 bytes) | pinHash (16 bytes)]
+        short plainLen = rsaCipher.doFinal(encryptedBlob, off, len, tempBuffer, (short) 0);
+
+        if (plainLen < 32) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+
+        // So sanh Nonce tempBuffer[0..15]) vs Nonce trong RAM (currentNonce)
+        if (Util.arrayCompare(tempBuffer, (short) 0, currentNonce, (short) 0, (short) 16) != 0) {
+            resetNonce(); 
+            ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED); 
+        }
+
+        resetNonce();
+
+		// 1. Set Key dan xuat
+        wrapKey.setKey(tempBuffer, (short) 16);
+        
+        // 2. Giai ma Encrypted Blob trong EEPROM -> Ra Key tam
         keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
+        
+        // tempBuffer[0..15] chua ket qua giai ma (Candidate Master Key)
         keyWrapper.doFinal(encryptedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0);
+        
+        // 3. Hash Candidate Key
+        // tempBuffer[16..47] chua Hash masterKey
         sha1.doFinal(tempBuffer, (short) 0, (short) 16, tempBuffer, (short) 16);
 
+		// 4. So sanh voi Hash goc (masterKeyHash)
         boolean match = (Util.arrayCompare(tempBuffer, (short) 16, masterKeyHash, (short) 0, HASH_LEN) == 0);
 
         if (match) {
-            pinTries = MAX_RETRY;
+            pinTries = MAX_RETRY;// Reset retry
             isValidated = true;
             transientMasterKey.setKey(tempBuffer, (short)0);
             Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)64, (byte)0);
@@ -142,7 +205,6 @@ public class SecurityManager {
             isValidated = false;
             transientMasterKey.clearKey();
             
-            //  T ĐNG KHÓA KHI NHP SAI 3 LN
             if (pinTries == 0) {
                 isCardLocked = true; 
                 ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
@@ -151,26 +213,38 @@ public class SecurityManager {
             return false;
         }
     }
+    
+    private void resetNonce() {
+        Util.arrayFillNonAtomic(currentNonce, (short) 0, (short) 16, (byte) 0);
+    }
 
     public void changePin(byte[] newKey, short off) {
         if (!isValidated || !transientMasterKey.isInitialized()) 
             ISOException.throwIt(ISO7816.SW_CONDITIONS_NOT_SATISFIED);
 
+		// 1. Lay Master Key tu RAM ra temp
         transientMasterKey.getKey(tempBuffer, (short) 0);
+        
+        // 2. Set new Key Argon2
         wrapKey.setKey(newKey, off);
+        
+        // 3. Ma hoa Master Key = new key -> Ghi de vao Blob
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, tempBuffer, (short) 16); 
+        
         if (Util.arrayCompare(tempBuffer, (short) 16, encryptedMasterKey, (short) 0, (short) 16) == 0) {
             ISOException.throwIt(SW_PIN_IDENTICAL);
         }
+        
         Util.arrayCopyNonAtomic(tempBuffer, (short) 16, encryptedMasterKey, (short) 0, (short) 16);
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        
+        //set key admin
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, adminWrappedMasterKey, (short) 0);
         Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)32, (byte)0);
     }
 
-    //  Admin khóa th - HOT ĐNG TRC TIP
     public void lockCard() {
         isCardLocked = true;
         isValidated = false;
@@ -178,7 +252,6 @@ public class SecurityManager {
         pinTries = 0; 
     }
 
-    //  Admin m khóa th - HOT ĐNG TRC TIP
     public void unlockCard() {
         isCardLocked = false;
         pinTries = MAX_RETRY;
@@ -186,9 +259,8 @@ public class SecurityManager {
         transientMasterKey.clearKey();
     }
 
-    //  Admin Reset PIN - S dng Admin Key tnh
     public void resetPin(byte[] newKeyBuffer, short off) {
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
         keyWrapper.doFinal(adminWrappedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0); 
 
@@ -202,14 +274,14 @@ public class SecurityManager {
         }
 
         Util.arrayCopyNonAtomic(tempBuffer, (short) 16, encryptedMasterKey, (short) 0, (short) 16);
-        wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
+        wrapKey.setKey(adminStaticKey, (short) 0);
         keyWrapper.init(wrapKey, Cipher.MODE_ENCRYPT);
         keyWrapper.doFinal(tempBuffer, (short) 0, (short) 16, adminWrappedMasterKey, (short) 0);
 
         Util.arrayFillNonAtomic(tempBuffer, (short)0, (short)32, (byte)0);
         pinTries = MAX_RETRY;
         isCardLocked = false;
-        // Reset xong không t đng validate, User vn phi verifyPin bng m mi
+        // Reset xong khng t ng validate, User vn phi verifyPin bng m mi
         isValidated = false; 
     }
 
@@ -225,12 +297,17 @@ public class SecurityManager {
         aesCipher.doFinal(src, srcOff, len, dest, destOff);
     }
 
+	// [Len Modulus (2b)] [Modulus Data] [Len Exponent (2b)] [Exponent Data]
     public short getPublicKey(byte[] dest, short off) {
+        // 2 byte dau ghi len Modulus
         short modLen = publicKey.getModulus(dest, (short)(off + 2));
         Util.setShort(dest, off, modLen);
+        
         short expOff = (short)(off + 2 + modLen);
+        // 2 byte tiep ghi len Exponent
         short expLen = publicKey.getExponent(dest, (short)(expOff + 2));
         Util.setShort(dest, expOff, expLen);
+        
         return (short)(2 + modLen + 2 + expLen);
     }
 
@@ -239,25 +316,25 @@ public class SecurityManager {
         rsaSignature.init(privateKey, Signature.MODE_SIGN);
         return rsaSignature.sign(input, inputOff, inputLen, sigBuff, sigOff);
     }
-    // Thêm hàm xác thc Admin mi
-	public void verifyAdmin(byte[] inputKey, short off) {
-		// So sánh key gi lên vi ADMIN_STATIC_KEY (ADMIN_KEY_2025...)
-		if (Util.arrayCompare(inputKey, off, ADMIN_STATIC_KEY, (short) 0, (short) 16) == 0) {
-			isAdminValidated = true;
-			
-			// QUAN TRNG: Admin cng cn np MasterKey đ có quyn Encrypt d liu khi Update Info
-			// Dùng cơ ch Unwrapping ging như lúc Reset PIN
-			wrapKey.setKey(ADMIN_STATIC_KEY, (short) 0);
-			keyWrapper.init(wrapKey, Cipher.MODE_DECRYPT);
-			keyWrapper.doFinal(adminWrappedMasterKey, (short) 0, (short) 16, tempBuffer, (short) 0);
-			transientMasterKey.setKey(tempBuffer, (short) 0);
-		} else {
-			isAdminValidated = false;
-			ISOException.throwIt(ISO7816.SW_SECURITY_STATUS_NOT_SATISFIED);
-		}
-	}
+    // Hàm để nạp khóa từ bên ngoài
+    public void injectAdminKeyWithRSA(byte[] buf, short off, short len) {
+        // 1. Chặn nếu đã nạp rồi (Chỉ nạp 1 lần duy nhất trong đời thẻ)
+        if (isAdminKeySet) ISOException.throwIt(ISO7816.SW_COMMAND_NOT_ALLOWED);
+        
+        // 2. Kiểm tra độ dài gói RSA (1024-bit RSA luôn là 128 bytes)
+        if (len != 128) ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
 
-	public boolean isAdminValidated() {
-		return isAdminValidated;
-	}
+        // 3. Giải mã dữ liệu nhận được bằng Private Key lưu trong thẻ
+        rsaCipher.init(privateKey, Cipher.MODE_DECRYPT);
+        short plainLen = rsaCipher.doFinal(buf, off, len, adminStaticKey, (short) 0);
+
+        // 4. Kiểm tra xem kết quả giải mã có đúng 16 byte (độ dài AES Key) không
+        if (plainLen != 16) {
+            Util.arrayFillNonAtomic(adminStaticKey, (short)0, (short)16, (byte)0);
+            ISOException.throwIt(ISO7816.SW_DATA_INVALID);
+        }
+        
+        // 5. Chốt khóa
+        isAdminKeySet = true;
+    }
 }
